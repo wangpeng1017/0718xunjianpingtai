@@ -1,0 +1,19 @@
+# Netlify重定向配置文件
+# 将所有路由重定向到index.html以支持React Router的客户端路由
+
+# SPA路由重定向 - 所有非文件请求都重定向到index.html
+/*    /index.html   200
+
+# API代理（如果需要）
+# /api/*  https://your-api-domain.com/api/:splat  200
+
+# 静态资源缓存优化
+/static/*  /static/:splat  200
+/assets/*  /assets/:splat  200
+
+# 安全头设置
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
