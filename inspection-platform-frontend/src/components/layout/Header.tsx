@@ -35,6 +35,7 @@ export function Header({ className }: HeaderProps) {
     const breadcrumbs = [{ label: '首页', path: '/' }];
 
     const pathMap: Record<string, string> = {
+      'dashboard': '仪表盘',
       'platform-config': '平台配置',
       'capabilities': '能力配置',
       'integration': '集成支撑',

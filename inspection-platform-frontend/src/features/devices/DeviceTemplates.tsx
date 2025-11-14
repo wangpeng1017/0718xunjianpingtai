@@ -108,6 +108,129 @@ const mockTemplates: DeviceTemplate[] = [
     createdAt: '2024-06-01T13:20:00Z',
     updatedAt: '2024-07-15T15:45:00Z',
     usageCount: 0
+  },
+  {
+    id: 'template-5',
+    name: '测温云台模板',
+    type: 'camera',
+    description: '集成热成像与可见光的测温云台设备模板，可用于设备热点监测',
+    capabilities: ['图像采集', '热成像测温', '云台控制'],
+    specifications: {
+      '测温范围': '-20°C ~ 550°C',
+      '测温精度': '±2°C',
+      '最大测温距离': '300m',
+      '云台速度': '20°/s'
+    },
+    protocols: ['RTSP', 'HTTP', 'ONVIF'],
+    status: 'active',
+    createdAt: '2024-07-01T10:00:00Z',
+    updatedAt: '2024-07-16T09:00:00Z',
+    usageCount: 6
+  },
+  {
+    id: 'template-6',
+    name: '可见光云台模板',
+    type: 'camera',
+    description: '用于远距离可见光监控的云台设备模板',
+    capabilities: ['图像采集', '云台控制', '远距离变焦'],
+    specifications: {
+      '分辨率': '4K',
+      '光学变倍': '30x',
+      '最大观测距离': '800m',
+      '水平旋转范围': '360°'
+    },
+    protocols: ['RTSP', 'HTTP', 'ONVIF'],
+    status: 'active',
+    createdAt: '2024-07-01T10:05:00Z',
+    updatedAt: '2024-07-16T09:05:00Z',
+    usageCount: 4
+  },
+  {
+    id: 'template-7',
+    name: '漏油检测云台模板',
+    type: 'camera',
+    description: '基于红外与可见光的漏油检测专用云台模板',
+    capabilities: ['图像采集', '红外成像', '漏油检测', '云台控制'],
+    specifications: {
+      '检测波段': '3.3–3.6μm',
+      '最小检出率': '0.5L/h',
+      '最大检测距离': '300m'
+    },
+    protocols: ['RTSP', 'HTTP'],
+    status: 'active',
+    createdAt: '2024-07-01T10:10:00Z',
+    updatedAt: '2024-07-16T09:10:00Z',
+    usageCount: 3
+  },
+  {
+    id: 'template-8',
+    name: '在线式声像仪模板',
+    type: 'sensor',
+    description: '用于局放、泄漏等声学异常定位的在线声像仪模板',
+    capabilities: ['声像成像', '温度检测', '异常告警'],
+    specifications: {
+      '频率范围': '2kHz ~ 48kHz',
+      '动态范围': '120dB',
+      '麦克风阵列数量': '64'
+    },
+    protocols: ['MQTT', 'HTTP'],
+    status: 'active',
+    createdAt: '2024-07-01T10:15:00Z',
+    updatedAt: '2024-07-16T09:15:00Z',
+    usageCount: 2
+  },
+  {
+    id: 'template-9',
+    name: '双镜头云台+声像仪一体云台模板',
+    type: 'camera',
+    description: '集可见光、热成像与声像定位于一体的综合云台设备模板',
+    capabilities: ['图像采集', '热成像测温', '声像成像', '云台控制'],
+    specifications: {
+      '可见光分辨率': '4K',
+      '热成像分辨率': '640x512',
+      '声像阵列': '64通道',
+      '最大观测距离': '600m'
+    },
+    protocols: ['RTSP', 'HTTP', 'MQTT'],
+    status: 'active',
+    createdAt: '2024-07-01T10:20:00Z',
+    updatedAt: '2024-07-16T09:20:00Z',
+    usageCount: 1
+  },
+  {
+    id: 'template-10',
+    name: 'TDLAS检测云台模板',
+    type: 'sensor',
+    description: '基于TDLAS技术的远距离气体泄漏检测云台模板',
+    capabilities: ['气体检测', 'TDLAS测量', '云台控制'],
+    specifications: {
+      '可检测气体': 'CH4 / C2H6',
+      '检测距离': '500m',
+      '最小检出浓度': '5ppm·m'
+    },
+    protocols: ['MQTT', 'HTTP'],
+    status: 'active',
+    createdAt: '2024-07-01T10:25:00Z',
+    updatedAt: '2024-07-16T09:25:00Z',
+    usageCount: 2
+  },
+  {
+    id: 'template-11',
+    name: '边缘分析主机模板',
+    type: 'sensor',
+    description: '用于边缘侧AI推理与数据汇聚的分析主机模板',
+    capabilities: ['边缘计算', 'AI推理', '数据汇聚'],
+    specifications: {
+      'CPU核心数': '8',
+      '内存': '32GB',
+      '存储空间': '512GB SSD',
+      '网络接口': '2 x 10GbE'
+    },
+    protocols: ['MQTT', 'HTTP', 'gRPC'],
+    status: 'active',
+    createdAt: '2024-07-01T10:30:00Z',
+    updatedAt: '2024-07-16T09:30:00Z',
+    usageCount: 5
   }
 ];
 
