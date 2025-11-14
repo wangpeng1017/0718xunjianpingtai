@@ -258,7 +258,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div
-      className={`flex flex-col bg-gradient-to-b from-emerald-800 via-emerald-700 to-emerald-600 text-white shadow-lg transition-all duration-300 ${
+      className={`flex flex-col bg-gradient-to-b from-sky-800 via-emerald-700 to-lime-600 text-white shadow-lg transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       } ${className || ''}`}
     >
