@@ -259,7 +259,7 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <div
       className={`flex flex-col bg-gradient-to-b from-sky-800 via-emerald-700 to-lime-600 text-white shadow-lg transition-all duration-300 ${
-        collapsed ? 'w-16' : 'w-44'
+        collapsed ? 'w-16' : 'w-52'
       } ${className || ''}`}
     >
       {/* Logo */}
