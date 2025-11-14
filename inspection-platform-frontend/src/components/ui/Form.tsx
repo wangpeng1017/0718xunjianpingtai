@@ -49,7 +49,7 @@ export function Select({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
-      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${className}`}
+      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${className}`}
     >
       <option value="">{placeholder}</option>
       {options.map((option) => (
@@ -85,7 +85,7 @@ export function TextArea({
       placeholder={placeholder}
       rows={rows}
       disabled={disabled}
-      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-vertical ${className}`}
+      className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-vertical ${className}`}
     />
   );
 }
@@ -112,7 +112,7 @@ export function Checkbox({
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
-        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        className="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
       />
       <span className="text-sm text-gray-700">{label}</span>
     </label>
@@ -154,7 +154,7 @@ export function RadioGroup({
             checked={value === option.value}
             onChange={(e) => onChange(e.target.value)}
             disabled={option.disabled}
-            className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+            className="h-4 w-4 text-emerald-600 border-gray-300 focus:ring-emerald-500"
           />
           <span className="text-sm text-gray-700">{option.label}</span>
         </label>

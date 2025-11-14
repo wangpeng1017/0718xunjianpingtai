@@ -135,7 +135,7 @@ export function ConfirmModal({
   };
 
   const typeStyles = {
-    info: 'bg-blue-500 hover:bg-blue-600',
+    info: 'bg-emerald-500 hover:bg-emerald-600',
     warning: 'bg-yellow-500 hover:bg-yellow-600',
     danger: 'bg-red-500 hover:bg-red-600',
   };

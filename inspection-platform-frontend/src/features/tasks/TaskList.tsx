@@ -288,48 +288,48 @@ function TaskList() {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">总任务</p>
-              <p className="text-2xl font-bold">{statusStats.total}</p>
+              <p className="text-xs text-gray-500">总任务</p>
+              <p className="mt-1 text-2xl font-bold text-gray-800">{statusStats.total}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">待执行</p>
-              <p className="text-2xl font-bold text-blue-600">{statusStats.pending}</p>
+              <p className="text-xs text-gray-500">待执行</p>
+              <p className="mt-1 text-2xl font-bold text-amber-600">{statusStats.pending}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">进行中</p>
-              <p className="text-2xl font-bold text-purple-600">{statusStats.running}</p>
+              <p className="text-xs text-gray-500">进行中</p>
+              <p className="mt-1 text-2xl font-bold text-emerald-600">{statusStats.running}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">已完成</p>
-              <p className="text-2xl font-bold text-green-600">{statusStats.completed}</p>
+              <p className="text-xs text-gray-500">已完成</p>
+              <p className="mt-1 text-2xl font-bold text-sky-600">{statusStats.completed}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">失败</p>
-              <p className="text-2xl font-bold text-red-600">{statusStats.failed}</p>
+              <p className="text-xs text-gray-500">失败</p>
+              <p className="mt-1 text-2xl font-bold text-red-600">{statusStats.failed}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-600">已取消</p>
-              <p className="text-2xl font-bold text-gray-600">{statusStats.cancelled}</p>
+              <p className="text-xs text-gray-500">已取消</p>
+              <p className="mt-1 text-2xl font-bold text-gray-600">{statusStats.cancelled}</p>
             </div>
           </CardContent>
         </Card>
@@ -417,9 +417,9 @@ function TaskList() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-gray-200 rounded-full h-2">
+                      <div className="w-20 bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
-                          className="bg-blue-500 h-2 rounded-full"
+                          className="bg-emerald-500 h-2 rounded-full"
                           style={{ width: `${task.progress}%` }}
                         />
                       </div>

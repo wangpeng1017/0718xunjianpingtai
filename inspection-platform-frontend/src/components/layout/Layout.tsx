@@ -25,7 +25,8 @@ export function Layout() {
             'min-w-0' // 防止内容溢出
           )}
         >
-          <div className="container mx-auto px-6 py-6 max-w-7xl">
+          {/* 全宽内容区域，靠近设计图的布局 */}
+          <div className="px-6 py-6">
             <Outlet />
           </div>
         </main>

@@ -178,18 +178,18 @@ export function Sidebar({ className }: SidebarProps) {
       <div key={item.id}>
         {/* 主菜单项 */}
         <div
-          className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+          className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
             level > 0 ? 'ml-4' : ''
           } ${
             isItemActive
-              ? 'bg-blue-100 text-blue-900'
-              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+              ? 'bg-white/20 text-white'
+              : 'text-white/80 hover:bg-white/10 hover:text-white'
           } ${collapsed && level === 0 ? 'justify-center px-2' : ''}`}
           onClick={() => {
             if (hasChildren && !collapsed) {
               toggleExpanded(item.id);
             } else if (item.path) {
-              // 直接导航
+              // 直接导航（Link 本身处理导航）
             }
           }}
         >
@@ -203,7 +203,7 @@ export function Sidebar({ className }: SidebarProps) {
               <item.icon className={`h-5 w-5 ${!collapsed ? 'mr-3' : ''}`} />
               {!collapsed && (
                 <>
-                  <span className="flex-1">{item.label}</span>
+                  <span className="flex-1 truncate">{item.label}</span>
                   {hasChildren && (
                     <ChevronRight
                       className={`h-4 w-4 transition-transform ${
@@ -219,7 +219,7 @@ export function Sidebar({ className }: SidebarProps) {
               <item.icon className={`h-5 w-5 ${!collapsed ? 'mr-3' : ''}`} />
               {!collapsed && (
                 <>
-                  <span className="flex-1">{item.label}</span>
+                  <span className="flex-1 truncate">{item.label}</span>
                   {hasChildren && (
                     <ChevronRight
                       className={`h-4 w-4 transition-transform ${
@@ -240,14 +240,14 @@ export function Sidebar({ className }: SidebarProps) {
               <Link
                 key={child.id}
                 to={child.path!}
-                className={`flex items-center px-3 py-2 ml-6 text-sm rounded-lg transition-colors ${
+                className={`flex items-center px-3 py-1.5 ml-6 text-xs rounded-md transition-colors ${
                   isActive(child.path!)
-                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-500'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-white text-emerald-700 shadow-sm'
+                    : 'text-emerald-50/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <child.icon className="h-4 w-4 mr-3" />
-                <span>{child.label}</span>
+                <child.icon className="h-4 w-4 mr-2" />
+                <span className="truncate">{child.label}</span>
               </Link>
             ))}
           </div>
@@ -258,25 +258,25 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div
-      className={`flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${
+      className={`flex flex-col bg-gradient-to-b from-emerald-800 via-emerald-700 to-emerald-600 text-white shadow-lg transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       } ${className || ''}`}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         {!collapsed && (
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center shadow-sm">
               <Monitor className="h-5 w-5 text-white" />
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">
+            <span className="ml-2 text-base font-semibold tracking-wide">
               智慧巡检平台
             </span>
           </div>
         )}
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-1.5 rounded-full hover:bg-white/10 transition-colors text-white"
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -287,16 +287,14 @@ export function Sidebar({ className }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navigationItems.map(item => renderNavigationItem(item))}
       </nav>
 
       {/* Footer */}
       {!collapsed && (
-        <div className="p-4 border-t border-gray-200">
-          <div className="text-xs text-gray-500 text-center">
-            版本 v1.0.0
-          </div>
+        <div className="px-4 py-3 border-t border-white/10 text-xs text-emerald-50/80 text-center">
+          版本 v1.0.0
         </div>
       )}
     </div>
