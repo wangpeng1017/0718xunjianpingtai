@@ -22,12 +22,29 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Button } from '../../components/ui/Button';
+import { Modal } from '../../components/ui/Modal';
 import { useDevices } from '../../stores/useDeviceStore';
 import { formatRelativeTime } from '../../lib/utils';
 import type { Device, MonitoringData } from '../../types';
 
 // 模拟实时监控数据生成
 const generateRealtimeData = (device: Device): MonitoringData => {
+  // 摄像头-002 使用真实视频流，其它设备继续使用模拟图片
+  const isCamera002 = device.id === 'device-2' || device.name === '摄像头-002';
+
+  const media: MonitoringData['media'] = isCamera002
+    ? {
+        type: 'video',
+        url: 'http://10.130.9.179:8004/app/stream1.live.mp4',
+      }
+    : Math.random() > 0.7
+      ? {
+          type: 'image',
+          url: `https://picsum.photos/400/300?random=${Date.now()}`,
+          thumbnail: `https://picsum.photos/100/75?random=${Date.now()}`,
+        }
+      : undefined;
+
   return {
     deviceId: device.id,
     timestamp: new Date().toISOString(),
@@ -44,11 +61,7 @@ const generateRealtimeData = (device: Device): MonitoringData => {
       speed: Math.random() * 10,
       heading: Math.random() * 360,
     },
-    media: Math.random() > 0.7 ? {
-      type: 'image',
-      url: `https://picsum.photos/400/300?random=${Date.now()}`,
-      thumbnail: `https://picsum.photos/100/75?random=${Date.now()}`,
-    } : undefined,
+    media,
   };
 };
 
@@ -170,17 +183,29 @@ function MonitoringCard({ device, monitoringData, onViewDetails }: MonitoringCar
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
                       <Camera className="h-4 w-4 mr-2 text-gray-400" />
-                      <span className="text-sm text-gray-600">最新图像</span>
+                      <span className="text-sm text-gray-600">
+                        {monitoringData.media.type === 'video' ? '实时视频' : '最新图像'}
+                      </span>
                     </div>
                     <span className="text-xs text-gray-400">
                       {formatRelativeTime(monitoringData.timestamp)}
                     </span>
                   </div>
-                  <img
-                    src={monitoringData.media.thumbnail}
-                    alt="设备图像"
-                    className="w-full h-20 object-cover rounded"
-                  />
+                  {monitoringData.media.type === 'video' ? (
+                    <video
+                      src={monitoringData.media.url}
+                      className="w-full h-32 bg-black rounded"
+                      controls
+                      autoPlay
+                      muted
+                    />
+                  ) : (
+                    <img
+                      src={monitoringData.media.thumbnail || monitoringData.media.url}
+                      alt="设备图像"
+                      className="w-full h-20 object-cover rounded"
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -217,6 +242,7 @@ function RealTimeMonitoring() {
   const [monitoringData, setMonitoringData] = useState<Record<string, MonitoringData>>({});
   const [isAutoRefresh, setIsAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(5000); // 5秒
+  const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
 
   // 生成实时数据
   const generateData = () => {
@@ -241,12 +267,13 @@ function RealTimeMonitoring() {
   }, [devices]);
 
   const handleViewDetails = (device: Device) => {
-    console.log('查看设备详情:', device);
+    setSelectedDevice(device);
   };
 
   const onlineDevices = devices.filter(d => d.status === 'online');
   const offlineDevices = devices.filter(d => d.status === 'offline');
   const maintenanceDevices = devices.filter(d => d.status === 'maintenance');
+  const selectedMonitoringData = selectedDevice ? monitoringData[selectedDevice.id] : undefined;
 
   return (
     <div className="space-y-6">
@@ -398,6 +425,90 @@ function RealTimeMonitoring() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* 设备详情弹窗 */}
+      {selectedDevice && (
+        <Modal
+          isOpen={!!selectedDevice}
+          onClose={() => setSelectedDevice(null)}
+          title={`${selectedDevice.name} 详情`}
+          size="xl"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              {selectedMonitoringData?.media ? (
+                selectedMonitoringData.media.type === 'video' ? (
+                  <video
+                    src={selectedMonitoringData.media.url}
+                    className="w-full h-64 bg-black rounded"
+                    controls
+                    autoPlay
+                    muted
+                  />
+                ) : (
+                  <img
+                    src={selectedMonitoringData.media.thumbnail || selectedMonitoringData.media.url}
+                    alt="设备图像"
+                    className="w-full h-64 object-cover rounded"
+                  />
+                )
+              ) : (
+                <div className="h-64 flex items-center justify-center bg-gray-100 rounded">
+                  <span className="text-gray-500 text-sm">暂无媒体数据</span>
+                </div>
+              )}
+            </div>
+            <div className="space-y-4 text-sm">
+              <div>
+                <div className="text-xs text-gray-500 mb-1">设备信息</div>
+                <div className="font-medium text-gray-900">{selectedDevice.name}</div>
+                <div className="text-gray-500">类型: {selectedDevice.type}</div>
+                <div className="text-gray-500 flex items-center space-x-2">
+                  <span>状态:</span>
+                  <StatusBadge status={selectedDevice.status} />
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 mb-1">位置</div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                  {selectedDevice.location.lat.toFixed(4)}, {selectedDevice.location.lng.toFixed(4)}
+                </div>
+              </div>
+              {selectedMonitoringData && (
+                <div className="space-y-2">
+                  <div className="text-xs text-gray-500">实时遥测</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selectedMonitoringData.telemetry.batteryLevel !== undefined && (
+                      <div className="text-gray-700">
+                        电池 {selectedMonitoringData.telemetry.batteryLevel}%
+                      </div>
+                    )}
+                    {selectedMonitoringData.telemetry.signalStrength !== undefined && (
+                      <div className="text-gray-700">
+                        信号 {selectedMonitoringData.telemetry.signalStrength}%
+                      </div>
+                    )}
+                    {selectedMonitoringData.telemetry.temperature !== undefined && (
+                      <div className="text-gray-700">
+                        温度 {selectedMonitoringData.telemetry.temperature}°C
+                      </div>
+                    )}
+                    {selectedMonitoringData.telemetry.humidity !== undefined && (
+                      <div className="text-gray-700">
+                        湿度 {selectedMonitoringData.telemetry.humidity}%
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    最新数据时间: {formatRelativeTime(selectedMonitoringData.timestamp)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );
