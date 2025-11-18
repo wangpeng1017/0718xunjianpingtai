@@ -23,7 +23,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
-import { useDevices } from '../../stores/useDeviceStore';
+import { useDevices, useDeviceStore } from '../../stores/useDeviceStore';
+import { mockDevices } from '../../mocks/data';
 import { formatRelativeTime } from '../../lib/utils';
 import type { Device, MonitoringData } from '../../types';
 
@@ -239,6 +240,7 @@ function MonitoringCard({ device, monitoringData, onViewDetails }: MonitoringCar
 
 function RealTimeMonitoring() {
   const devices = useDevices();
+  const { setDevices } = useDeviceStore();
   const [monitoringData, setMonitoringData] = useState<Record<string, MonitoringData>>({});
   const [isAutoRefresh, setIsAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(5000); // 5秒
@@ -260,6 +262,13 @@ function RealTimeMonitoring() {
       return () => clearInterval(interval);
     }
   }, [isAutoRefresh, refreshInterval, devices]);
+
+  // 初始化设备数据（防止直接进入实时监控页面时设备列表为空）
+  useEffect(() => {
+    if (devices.length === 0) {
+      setDevices(mockDevices);
+    }
+  }, [devices.length, setDevices]);
 
   // 初始化数据
   useEffect(() => {
