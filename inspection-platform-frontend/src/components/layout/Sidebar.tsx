@@ -40,16 +40,6 @@ const navigationItems: NavigationItem[] = [
     path: '/dashboard',
   },
   {
-    id: 'platform-config',
-    label: '平台配置',
-    icon: Settings,
-    children: [
-      { id: 'capability-config', label: '能力配置', icon: Zap, path: '/platform-config/capabilities' },
-      { id: 'integration', label: '集成支撑', icon: Network, path: '/platform-config/integration' },
-      { id: 'capability-test', label: '能力测试', icon: Play, path: '/platform-config/debug' },
-    ],
-  },
-  {
     id: 'device-management',
     label: '设备管理',
     icon: Monitor,
@@ -106,6 +96,16 @@ const navigationItems: NavigationItem[] = [
     children: [
       { id: 'data-stats', label: '数据统计', icon: BarChart3, path: '/statistics/data' },
       { id: 'custom-stats', label: '自定义统计', icon: PieChart, path: '/statistics/custom' },
+    ],
+  },
+  {
+    id: 'platform-config',
+    label: '平台配置',
+    icon: Settings,
+    children: [
+      { id: 'capability-config', label: '能力配置', icon: Zap, path: '/platform-config/capabilities' },
+      { id: 'integration', label: '集成支撑', icon: Network, path: '/platform-config/integration' },
+      { id: 'capability-test', label: '能力测试', icon: Play, path: '/platform-config/debug' },
     ],
   },
   {
@@ -178,13 +178,11 @@ export function Sidebar({ className }: SidebarProps) {
       <div key={item.id}>
         {/* 主菜单项 */}
         <div
-          className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-            level > 0 ? 'ml-4' : ''
-          } ${
-            isItemActive
+          className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${level > 0 ? 'ml-4' : ''
+            } ${isItemActive
               ? 'bg-white/20 text-white'
               : 'text-white/80 hover:bg-white/10 hover:text-white'
-          } ${collapsed && level === 0 ? 'justify-center px-2' : ''}`}
+            } ${collapsed && level === 0 ? 'justify-center px-2' : ''}`}
           onClick={() => {
             if (hasChildren && !collapsed) {
               toggleExpanded(item.id);
@@ -196,9 +194,8 @@ export function Sidebar({ className }: SidebarProps) {
           {item.path ? (
             <Link
               to={item.path}
-              className={`flex items-center w-full ${
-                collapsed && level === 0 ? 'justify-center' : ''
-              }`}
+              className={`flex items-center w-full ${collapsed && level === 0 ? 'justify-center' : ''
+                }`}
             >
               <item.icon className={`h-5 w-5 ${!collapsed ? 'mr-3' : ''}`} />
               {!collapsed && (
@@ -206,9 +203,8 @@ export function Sidebar({ className }: SidebarProps) {
                   <span className="flex-1 truncate">{item.label}</span>
                   {hasChildren && (
                     <ChevronRight
-                      className={`h-4 w-4 transition-transform ${
-                        isExpanded ? 'rotate-90' : ''
-                      }`}
+                      className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''
+                        }`}
                     />
                   )}
                 </>
@@ -222,9 +218,8 @@ export function Sidebar({ className }: SidebarProps) {
                   <span className="flex-1 truncate">{item.label}</span>
                   {hasChildren && (
                     <ChevronRight
-                      className={`h-4 w-4 transition-transform ${
-                        isExpanded ? 'rotate-90' : ''
-                      }`}
+                      className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''
+                        }`}
                     />
                   )}
                 </>
@@ -240,11 +235,10 @@ export function Sidebar({ className }: SidebarProps) {
               <Link
                 key={child.id}
                 to={child.path!}
-                className={`flex items-center px-3 py-1.5 ml-6 text-xs rounded-md transition-colors ${
-                  isActive(child.path!)
+                className={`flex items-center px-3 py-1.5 ml-6 text-xs rounded-md transition-colors ${isActive(child.path!)
                     ? 'bg-white text-emerald-700 shadow-sm'
                     : 'text-emerald-50/80 hover:bg-white/10 hover:text-white'
-                }`}
+                  }`}
               >
                 <child.icon className="h-4 w-4 mr-2" />
                 <span className="truncate">{child.label}</span>
@@ -258,9 +252,8 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div
-      className={`flex flex-col bg-gradient-to-b from-sky-800 via-emerald-700 to-lime-600 text-white shadow-lg transition-all duration-300 ${
-        collapsed ? 'w-16' : 'w-52'
-      } ${className || ''}`}
+      className={`flex flex-col bg-gradient-to-b from-sky-800 via-emerald-700 to-lime-600 text-white shadow-lg transition-all duration-300 ${collapsed ? 'w-16' : 'w-52'
+        } ${className || ''}`}
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">

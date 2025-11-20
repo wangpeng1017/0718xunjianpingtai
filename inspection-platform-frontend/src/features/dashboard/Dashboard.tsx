@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  Monitor, 
-  Activity, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  Monitor,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
   Clock,
   TrendingUp,
   MapPin,
@@ -35,11 +35,10 @@ function StatCard({ title, value, change, icon: Icon, trend = 'neutral' }: StatC
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
         {change && (
-          <p className={`text-xs flex items-center mt-1 ${
-            trend === 'up' ? 'text-green-600' : 
-            trend === 'down' ? 'text-red-600' : 
-            'text-gray-600'
-          }`}>
+          <p className={`text-xs flex items-center mt-1 ${trend === 'up' ? 'text-green-600' :
+            trend === 'down' ? 'text-red-600' :
+              'text-gray-600'
+            }`}>
             {trend === 'up' && <TrendingUp className="h-3 w-3 mr-1" />}
             {change}
           </p>
@@ -49,10 +48,13 @@ function StatCard({ title, value, change, icon: Icon, trend = 'neutral' }: StatC
   );
 }
 
+import { RealTimeMapModal } from './RealTimeMapModal';
+
 function Dashboard() {
   const devices = useDevices();
   const tasks = useTasks();
   const [timeSeriesData] = React.useState(() => generateTimeSeriesData(7));
+  const [isMapModalOpen, setIsMapModalOpen] = React.useState(false);
 
   // 计算统计数据
   const deviceStats = React.useMemo(() => {
@@ -60,7 +62,7 @@ function Dashboard() {
     const online = devices.filter(d => d.status === 'online').length;
     const offline = devices.filter(d => d.status === 'offline').length;
     const maintenance = devices.filter(d => d.status === 'maintenance').length;
-    
+
     return { total, online, offline, maintenance };
   }, [devices]);
 
@@ -70,7 +72,7 @@ function Dashboard() {
     const running = tasks.filter(t => t.status === 'running').length;
     const completed = tasks.filter(t => t.status === 'completed').length;
     const failed = tasks.filter(t => t.status === 'failed').length;
-    
+
     return { total, pending, running, completed, failed };
   }, [tasks]);
 
@@ -99,7 +101,7 @@ function Dashboard() {
           <p className="text-gray-600 mt-1">智慧巡检平台概览</p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setIsMapModalOpen(true)}>
             <MapPin className="h-4 w-4 mr-2" />
             实时地图
           </Button>
@@ -154,7 +156,7 @@ function Dashboard() {
               {deviceStatusData.map((item) => (
                 <div key={item.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div 
+                    <div
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: item.color }}
                     />
@@ -225,18 +227,18 @@ function Dashboard() {
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge 
+                    <Badge
                       variant={
                         task.status === 'completed' ? 'success' :
-                        task.status === 'running' ? 'default' :
-                        task.status === 'failed' ? 'error' :
-                        'secondary'
+                          task.status === 'running' ? 'default' :
+                            task.status === 'failed' ? 'error' :
+                              'secondary'
                       }
                     >
                       {task.status === 'completed' ? '已完成' :
-                       task.status === 'running' ? '进行中' :
-                       task.status === 'failed' ? '失败' :
-                       task.status === 'pending' ? '待执行' : '已取消'}
+                        task.status === 'running' ? '进行中' :
+                          task.status === 'failed' ? '失败' :
+                            task.status === 'pending' ? '待执行' : '已取消'}
                     </Badge>
                   </div>
                 </div>
@@ -259,7 +261,7 @@ function Dashboard() {
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '45%' }} />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">内存使用率</span>
                 <span className="text-sm font-medium">62%</span>
@@ -267,7 +269,7 @@ function Dashboard() {
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-green-500 h-2 rounded-full" style={{ width: '62%' }} />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">存储使用率</span>
                 <span className="text-sm font-medium">78%</span>
@@ -275,7 +277,7 @@ function Dashboard() {
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '78%' }} />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">网络延迟</span>
                 <span className="text-sm font-medium">12ms</span>
@@ -287,7 +289,13 @@ function Dashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+
+
+      <RealTimeMapModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+      />
+    </div >
   );
 }
 
