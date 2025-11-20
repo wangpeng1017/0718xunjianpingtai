@@ -104,16 +104,18 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                 }}
             >
                 {/* 路线连接线 */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                    <polyline
-                        points={points.map(p => `${p.x}%,${p.y}%`).join(' ')}
-                        fill="none"
-                        stroke="#3b82f6"
-                        strokeWidth="2"
-                        strokeDasharray="5,5"
-                        className="animate-pulse"
-                    />
-                </svg>
+                {points.length > 1 && (
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ width: '100%', height: '100%' }}>
+                        <polyline
+                            points={points.map(p => `${p.x}%,${p.y}%`).join(' ')}
+                            fill="none"
+                            stroke="#3b82f6"
+                            strokeWidth="3"
+                            strokeDasharray="8,4"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                    </svg>
+                )}
 
                 {/* 巡检点 */}
                 {points.map((point, index) => (
