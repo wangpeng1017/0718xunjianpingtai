@@ -104,14 +104,18 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                 }}
             >
                 {/* 路线连接线 */}
-                {points.length > 1 && (
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ width: '100%', height: '100%' }}>
+                {points.length > 1 && containerRef.current && (
+                    <svg
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="none"
+                    >
                         <polyline
-                            points={points.map(p => `${p.x}%,${p.y}%`).join(' ')}
+                            points={points.map(p => `${p.x},${p.y}`).join(' ')}
                             fill="none"
                             stroke="#3b82f6"
-                            strokeWidth="3"
-                            strokeDasharray="8,4"
+                            strokeWidth="0.5"
+                            strokeDasharray="2,1"
                             vectorEffect="non-scaling-stroke"
                         />
                     </svg>
