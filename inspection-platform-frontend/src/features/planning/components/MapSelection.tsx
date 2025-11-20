@@ -99,8 +99,10 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                 className={`relative w-full h-[400px] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden ${!readOnly ? 'cursor-crosshair hover:border-blue-400' : ''} transition-colors`}
                 onClick={handleMapClick}
                 style={{
-                    backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)',
-                    backgroundSize: '20px 20px'
+                    backgroundImage: 'url(/images/park-map.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
                 }}
             >
                 {/* 路线连接线 */}
