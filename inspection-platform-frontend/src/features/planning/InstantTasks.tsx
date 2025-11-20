@@ -20,7 +20,7 @@ import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
 import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { formatRelativeTime } from '../../lib/utils';
-import { MapSelection, Point } from './components/MapSelection';
+import { MapSelection, Point, InspectionItem } from './components/MapSelection';
 
 // 即时任务类型定义
 interface InstantTask {
@@ -39,6 +39,7 @@ interface InstantTask {
     name: string;
     location: { lat: number; lng: number };
     completed: boolean;
+    inspectionItems?: InspectionItem[];
   }[];
   mapPoints?: Point[];
   progress: number;
@@ -179,12 +180,25 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     }
 
     const selectedDevice = devices.find(d => d.value === formData.deviceId);
+
+    // Convert mapPoints to targets
+    const targets = formData.mapPoints.map((point, index) => ({
+      id: point.id,
+      name: point.name,
+      location: {
+        lat: 39.9042 + (point.y / 100) * 0.01, // Convert percentage to approximate lat/lng
+        lng: 116.4074 + (point.x / 100) * 0.01
+      },
+      completed: false,
+      inspectionItems: point.inspectionItems
+    }));
+
     const taskData: Partial<InstantTask> = {
       ...formData,
       deviceName: selectedDevice?.label,
       status: task?.status || 'pending',
       progress: task?.progress || 0,
-      targets: task?.targets || [],
+      targets: targets,
       createdAt: task?.createdAt || new Date().toISOString()
     };
 

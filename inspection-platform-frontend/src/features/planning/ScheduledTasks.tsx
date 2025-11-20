@@ -20,7 +20,7 @@ import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
 import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { formatRelativeTime } from '../../lib/utils';
-import { MapSelection, Point } from './components/MapSelection';
+import { MapSelection, Point, InspectionItem } from './components/MapSelection';
 
 // 计划任务类型定义
 interface ScheduledTask {
@@ -45,6 +45,7 @@ interface ScheduledTask {
     id: string;
     name: string;
     location: { lat: number; lng: number };
+    inspectionItems?: InspectionItem[];
   }[];
   mapPoints?: Point[];
   lastExecution?: string;
@@ -259,12 +260,23 @@ function ScheduledTasks() {
   const [selectedTask, setSelectedTask] = useState<ScheduledTask | null>(null);
 
   const handleCreateTask = (formData: any) => {
+    // Convert mapPoints to targets
+    const targets = formData.mapPoints.map((point: Point) => ({
+      id: point.id,
+      name: point.name,
+      location: {
+        lat: 39.9042 + (point.y / 100) * 0.01,
+        lng: 116.4074 + (point.x / 100) * 0.01
+      },
+      inspectionItems: point.inspectionItems
+    }));
+
     const newTask: ScheduledTask = {
       id: `task-${Date.now()}`,
       name: formData.name,
       description: formData.description,
       deviceId: formData.deviceId,
-      deviceName: '未知设备', // 简化处理
+      deviceName: '未知设备',
       priority: formData.priority as any,
       status: 'active',
       assignedTo: formData.assignedTo || '未分配',
@@ -274,7 +286,7 @@ function ScheduledTasks() {
         startDate: new Date().toISOString()
       },
       estimatedDuration: formData.estimatedDuration,
-      targets: [], // 简化处理
+      targets: targets,
       mapPoints: formData.mapPoints,
       nextExecution: new Date().toISOString(),
       executionCount: 0,
@@ -284,7 +296,6 @@ function ScheduledTasks() {
       notes: formData.notes
     };
 
-    setTasks([...tasks, newTask]);
     setTasks([...tasks, newTask]);
     setShowCreateModal(false);
   };

@@ -98,6 +98,14 @@ interface ExecutionTracking {
     estimatedTime: string;
     actualTime?: string;
     duration?: number;
+    inspectionItems?: {
+      id: string;
+      type: string;
+      name: string;
+      required: boolean;
+      completed?: boolean;
+      result?: string;
+    }[];
   }[];
 }
 
@@ -174,31 +182,48 @@ const mockExecutionData: ExecutionTracking[] = [
     checkpoints: [
       {
         id: 'cp-1',
-        name: '外观检查',
+        name: '巡检点1 - 变压器A1',
         status: 'completed',
         estimatedTime: '2024-07-17T09:05:00Z',
         actualTime: '2024-07-17T09:05:00Z',
-        duration: 5
+        duration: 5,
+        inspectionItems: [
+          { id: 'item-1', type: 'visual', name: '外观检查', required: true, completed: true, result: '正常' },
+          { id: 'item-2', type: 'temperature', name: '温度检测', required: true, completed: true, result: '68.5°C' }
+        ]
       },
       {
         id: 'cp-2',
-        name: '温度检测',
+        name: '巡检点2 - 配电柜B2',
         status: 'completed',
         estimatedTime: '2024-07-17T09:15:00Z',
         actualTime: '2024-07-17T09:15:00Z',
-        duration: 8
+        duration: 8,
+        inspectionItems: [
+          { id: 'item-3', type: 'visual', name: '外观检查', required: true, completed: true, result: '发现轻微油渍' },
+          { id: 'item-4', type: 'temperature', name: '温度检测', required: true, completed: true, result: '正常' },
+          { id: 'item-5', type: 'sound', name: '声音检测', required: false, completed: true, result: '正常' }
+        ]
       },
       {
         id: 'cp-3',
-        name: '声音检测',
+        name: '巡检点3 - 监控点C3',
         status: 'approaching',
-        estimatedTime: '2024-07-17T09:25:00Z'
+        estimatedTime: '2024-07-17T09:25:00Z',
+        inspectionItems: [
+          { id: 'item-6', type: 'visual', name: '外观检查', required: true, completed: false },
+          { id: 'item-7', type: 'temperature', name: '温度检测', required: true, completed: false }
+        ]
       },
       {
         id: 'cp-4',
-        name: '最终检查',
+        name: '巡检点4 - 最终检查',
         status: 'pending',
-        estimatedTime: '2024-07-17T09:30:00Z'
+        estimatedTime: '2024-07-17T09:30:00Z',
+        inspectionItems: [
+          { id: 'item-8', type: 'visual', name: '外观检查', required: true, completed: false },
+          { id: 'item-9', type: 'temperature', name: '温度检测', required: true, completed: false }
+        ]
       }
     ]
   },
@@ -353,7 +378,7 @@ function ExecutionTracking() {
       if (exec.id === executionId) {
         return {
           ...exec,
-          alerts: exec.alerts.map(alert => 
+          alerts: exec.alerts.map(alert =>
             alert.id === alertId ? { ...alert, acknowledged: true } : alert
           )
         };
@@ -435,21 +460,19 @@ function ExecutionTracking() {
                   return (
                     <div
                       key={execution.id}
-                      className={`p-4 cursor-pointer border-l-4 hover:bg-gray-50 ${
-                        selectedExecution?.id === execution.id
-                          ? 'bg-blue-50 border-blue-500'
-                          : 'border-transparent'
-                      }`}
+                      className={`p-4 cursor-pointer border-l-4 hover:bg-gray-50 ${selectedExecution?.id === execution.id
+                        ? 'bg-blue-50 border-blue-500'
+                        : 'border-transparent'
+                        }`}
                       onClick={() => setSelectedExecution(execution)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <StatusIcon className={`h-5 w-5 ${
-                            execution.status === 'running' ? 'text-green-500' :
+                          <StatusIcon className={`h-5 w-5 ${execution.status === 'running' ? 'text-green-500' :
                             execution.status === 'paused' ? 'text-yellow-500' :
-                            execution.status === 'emergency_stop' ? 'text-red-500' :
-                            'text-gray-400'
-                          }`} />
+                              execution.status === 'emergency_stop' ? 'text-red-500' :
+                                'text-gray-400'
+                            }`} />
                           <div>
                             <div className="font-medium text-sm">{execution.taskName}</div>
                             <div className="text-xs text-gray-500">{execution.deviceName}</div>
@@ -469,11 +492,10 @@ function ExecutionTracking() {
                       <div className="mt-2">
                         <div className="w-full bg-gray-200 rounded-full h-1.5">
                           <div
-                            className={`h-1.5 rounded-full ${
-                              execution.status === 'running' ? 'bg-green-500' :
+                            className={`h-1.5 rounded-full ${execution.status === 'running' ? 'bg-green-500' :
                               execution.status === 'paused' ? 'bg-yellow-500' :
-                              'bg-gray-400'
-                            }`}
+                                'bg-gray-400'
+                              }`}
                             style={{ width: `${execution.progress}%` }}
                           />
                         </div>
@@ -497,7 +519,7 @@ function ExecutionTracking() {
                     <div>
                       <CardTitle>{selectedExecution.taskName}</CardTitle>
                       <p className="text-sm text-gray-600 mt-1">
-                        设备: {selectedExecution.deviceName} • 
+                        设备: {selectedExecution.deviceName} •
                         开始时间: {formatRelativeTime(selectedExecution.startTime)}
                       </p>
                     </div>
@@ -544,7 +566,7 @@ function ExecutionTracking() {
                       <div className="flex items-center mt-1">
                         <MapPin className="h-4 w-4 mr-1 text-gray-400" />
                         <span className="text-sm">
-                          {selectedExecution.currentLocation.lat.toFixed(4)}, 
+                          {selectedExecution.currentLocation.lat.toFixed(4)},
                           {selectedExecution.currentLocation.lng.toFixed(4)}
                         </span>
                       </div>
@@ -589,44 +611,40 @@ function ExecutionTracking() {
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-center space-x-3">
-                        <Battery className={`h-5 w-5 ${
-                          selectedExecution.deviceMetrics.battery > 70 ? 'text-green-500' :
+                        <Battery className={`h-5 w-5 ${selectedExecution.deviceMetrics.battery > 70 ? 'text-green-500' :
                           selectedExecution.deviceMetrics.battery > 30 ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`} />
+                            'text-red-500'
+                          }`} />
                         <div>
                           <div className="text-sm text-gray-500">电池电量</div>
                           <div className="font-medium">{selectedExecution.deviceMetrics.battery}%</div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Thermometer className={`h-5 w-5 ${
-                          selectedExecution.deviceMetrics.temperature < 50 ? 'text-green-500' :
+                        <Thermometer className={`h-5 w-5 ${selectedExecution.deviceMetrics.temperature < 50 ? 'text-green-500' :
                           selectedExecution.deviceMetrics.temperature < 70 ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`} />
+                            'text-red-500'
+                          }`} />
                         <div>
                           <div className="text-sm text-gray-500">设备温度</div>
                           <div className="font-medium">{selectedExecution.deviceMetrics.temperature}°C</div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Wifi className={`h-5 w-5 ${
-                          selectedExecution.deviceMetrics.signalStrength > 70 ? 'text-green-500' :
+                        <Wifi className={`h-5 w-5 ${selectedExecution.deviceMetrics.signalStrength > 70 ? 'text-green-500' :
                           selectedExecution.deviceMetrics.signalStrength > 30 ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`} />
+                            'text-red-500'
+                          }`} />
                         <div>
                           <div className="text-sm text-gray-500">信号强度</div>
                           <div className="font-medium">{selectedExecution.deviceMetrics.signalStrength}%</div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Activity className={`h-5 w-5 ${
-                          selectedExecution.deviceMetrics.cpuUsage < 70 ? 'text-green-500' :
+                        <Activity className={`h-5 w-5 ${selectedExecution.deviceMetrics.cpuUsage < 70 ? 'text-green-500' :
                           selectedExecution.deviceMetrics.cpuUsage < 90 ? 'text-yellow-500' :
-                          'text-red-500'
-                        }`} />
+                            'text-red-500'
+                          }`} />
                         <div>
                           <div className="text-sm text-gray-500">CPU使用率</div>
                           <div className="font-medium">{selectedExecution.deviceMetrics.cpuUsage}%</div>
@@ -695,18 +713,16 @@ function ExecutionTracking() {
                             <div className="absolute left-2.5 top-6 bottom-0 w-0.5 bg-gray-200" />
                           )}
                           <div className="flex items-start space-x-3">
-                            <div className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center ${
-                              checkpoint.status === 'completed' ? 'bg-green-100' :
+                            <div className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center ${checkpoint.status === 'completed' ? 'bg-green-100' :
                               checkpoint.status === 'approaching' ? 'bg-yellow-100' :
-                              checkpoint.status === 'arrived' ? 'bg-blue-100' :
-                              'bg-gray-100'
-                            }`}>
-                              <div className={`w-2.5 h-2.5 rounded-full ${
-                                checkpoint.status === 'completed' ? 'bg-green-500' :
+                                checkpoint.status === 'arrived' ? 'bg-blue-100' :
+                                  'bg-gray-100'
+                              }`}>
+                              <div className={`w-2.5 h-2.5 rounded-full ${checkpoint.status === 'completed' ? 'bg-green-500' :
                                 checkpoint.status === 'approaching' ? 'bg-yellow-500' :
-                                checkpoint.status === 'arrived' ? 'bg-blue-500' :
-                                'bg-gray-300'
-                              }`} />
+                                  checkpoint.status === 'arrived' ? 'bg-blue-500' :
+                                    'bg-gray-300'
+                                }`} />
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
@@ -723,6 +739,32 @@ function ExecutionTracking() {
                                   <div>预计时间: {formatRelativeTime(checkpoint.estimatedTime)}</div>
                                 )}
                               </div>
+
+                              {/* 检查项列表 */}
+                              {checkpoint.inspectionItems && checkpoint.inspectionItems.length > 0 && (
+                                <div className="mt-3 space-y-2 pl-4 border-l-2 border-gray-200">
+                                  {checkpoint.inspectionItems.map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center space-x-2">
+                                        {item.completed ? (
+                                          <CheckCircle className="h-3 w-3 text-green-500" />
+                                        ) : (
+                                          <div className="h-3 w-3 rounded-full border-2 border-gray-300" />
+                                        )}
+                                        <span className={item.completed ? 'text-gray-700' : 'text-gray-500'}>
+                                          {item.name}
+                                          {item.required && <span className="text-red-500 ml-1">*</span>}
+                                        </span>
+                                      </div>
+                                      {item.result && (
+                                        <span className="text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                                          {item.result}
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -752,9 +794,8 @@ function ExecutionTracking() {
                           return (
                             <div
                               key={alert.id}
-                              className={`p-3 rounded-lg flex items-start space-x-3 ${getAlertColor(alert.type)} ${
-                                alert.acknowledged ? 'opacity-60' : ''
-                              }`}
+                              className={`p-3 rounded-lg flex items-start space-x-3 ${getAlertColor(alert.type)} ${alert.acknowledged ? 'opacity-60' : ''
+                                }`}
                             >
                               <AlertIcon className="h-5 w-5 mt-0.5" />
                               <div className="flex-1">
