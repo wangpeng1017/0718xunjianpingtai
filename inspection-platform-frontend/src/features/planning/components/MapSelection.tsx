@@ -114,8 +114,8 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                             points={points.map(p => `${p.x},${p.y}`).join(' ')}
                             fill="none"
                             stroke="#3b82f6"
-                            strokeWidth="0.5"
-                            strokeDasharray="2,1"
+                            strokeWidth="1.5"
+                            strokeDasharray="4,2"
                             vectorEffect="non-scaling-stroke"
                         />
                     </svg>
