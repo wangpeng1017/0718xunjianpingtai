@@ -20,6 +20,7 @@ import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
 import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { formatRelativeTime } from '../../lib/utils';
+import { MapSelection, Point } from './components/MapSelection';
 
 // 计划任务类型定义
 interface ScheduledTask {
@@ -45,6 +46,7 @@ interface ScheduledTask {
     name: string;
     location: { lat: number; lng: number };
   }[];
+  mapPoints?: Point[];
   lastExecution?: string;
   nextExecution: string;
   executionCount: number;
@@ -64,10 +66,11 @@ const mockScheduledTasks: ScheduledTask[] = [
     deviceName: '巡检无人机-01',
     status: 'active',
     priority: 'medium',
+    assignedTo: '张工程师',
     schedule: {
       type: 'daily',
       time: '09:00',
-      interval: 1
+      startDate: '2024-07-01T10:00:00Z'
     },
     estimatedDuration: 45,
     targets: [
@@ -88,13 +91,14 @@ const mockScheduledTasks: ScheduledTask[] = [
     description: '每周一上午10点执行西区全面检查',
     deviceId: 'device-2',
     deviceName: '巡检机器人-02',
-    status: 'scheduled',
+    status: 'active',
     priority: 'high',
+    assignedTo: '李技术员',
     schedule: {
       type: 'weekly',
       time: '10:00',
-      interval: 1,
-      dayOfWeek: 1
+      startDate: '2024-06-15T14:00:00Z',
+      daysOfWeek: [1]
     },
     estimatedDuration: 90,
     targets: [
@@ -109,16 +113,181 @@ const mockScheduledTasks: ScheduledTask[] = [
   }
 ];
 
+interface TaskFormProps {
+  onSubmit: (data: any) => void;
+  onCancel: () => void;
+}
+
+function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    deviceId: '',
+    priority: 'medium',
+    assignedTo: '',
+    scheduleType: 'daily',
+    scheduleTime: '09:00',
+    estimatedDuration: 30,
+    notes: '',
+    mapPoints: [] as Point[]
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = '任务名称不能为空';
+    if (!formData.deviceId) newErrors.deviceId = '请选择执行设备';
+    if (formData.estimatedDuration <= 0) newErrors.estimatedDuration = '预计时长必须大于0';
+    if (formData.mapPoints.length === 0) newErrors.mapPoints = '请至少选择一个巡检点';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    onSubmit(formData);
+  };
+
+  // Mock设备数据
+  const devices = [
+    { value: 'device-1', label: '巡检无人机-01' },
+    { value: 'device-2', label: '巡检机器人-02' },
+    { value: 'device-3', label: '高清摄像头-03' },
+  ];
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField label="任务名称" required error={errors.name}>
+          <Input
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="请输入任务名称"
+          />
+        </FormField>
+
+        <FormField label="执行设备" required error={errors.deviceId}>
+          <Select
+            value={formData.deviceId}
+            onChange={(value) => setFormData({ ...formData, deviceId: value })}
+            options={devices}
+            placeholder="请选择执行设备"
+          />
+        </FormField>
+
+        <FormField label="优先级">
+          <Select
+            value={formData.priority}
+            onChange={(value) => setFormData({ ...formData, priority: value })}
+            options={[
+              { value: 'low', label: '低' },
+              { value: 'medium', label: '中' },
+              { value: 'high', label: '高' },
+              { value: 'urgent', label: '紧急' }
+            ]}
+          />
+        </FormField>
+
+        <FormField label="预计时长(分钟)" required error={errors.estimatedDuration}>
+          <Input
+            type="number"
+            value={formData.estimatedDuration}
+            onChange={(e) => setFormData({ ...formData, estimatedDuration: parseInt(e.target.value) || 0 })}
+          />
+        </FormField>
+
+        <FormField label="调度类型">
+          <Select
+            value={formData.scheduleType}
+            onChange={(value) => setFormData({ ...formData, scheduleType: value })}
+            options={[
+              { value: 'once', label: '单次' },
+              { value: 'daily', label: '每天' },
+              { value: 'weekly', label: '每周' },
+              { value: 'monthly', label: '每月' }
+            ]}
+          />
+        </FormField>
+
+        <FormField label="执行时间">
+          <Input
+            type="time"
+            value={formData.scheduleTime}
+            onChange={(e) => setFormData({ ...formData, scheduleTime: e.target.value })}
+          />
+        </FormField>
+      </div>
+
+      <div className="mb-4">
+        <MapSelection
+          value={formData.mapPoints}
+          onChange={(points) => setFormData({ ...formData, mapPoints: points })}
+        />
+        {errors.mapPoints && (
+          <p className="text-sm text-red-500 mt-1">{errors.mapPoints}</p>
+        )}
+      </div>
+
+      <FormField label="任务描述">
+        <TextArea
+          value={formData.description}
+          onChange={(value) => setFormData({ ...formData, description: value })}
+          rows={3}
+        />
+      </FormField>
+
+      <ModalFooter>
+        <Button type="button" variant="outline" onClick={onCancel}>取消</Button>
+        <Button type="submit">创建</Button>
+      </ModalFooter>
+    </Form>
+  );
+}
+
 function ScheduledTasks() {
   const [tasks, setTasks] = useState<ScheduledTask[]>(mockScheduledTasks);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  const handleCreateTask = (formData: any) => {
+    const newTask: ScheduledTask = {
+      id: `task-${Date.now()}`,
+      name: formData.name,
+      description: formData.description,
+      deviceId: formData.deviceId,
+      deviceName: '未知设备', // 简化处理
+      priority: formData.priority as any,
+      status: 'active',
+      assignedTo: formData.assignedTo || '未分配',
+      schedule: {
+        type: formData.scheduleType as any,
+        time: formData.scheduleTime,
+        startDate: new Date().toISOString()
+      },
+      estimatedDuration: formData.estimatedDuration,
+      targets: [], // 简化处理
+      mapPoints: formData.mapPoints,
+      nextExecution: new Date().toISOString(),
+      executionCount: 0,
+      successRate: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      notes: formData.notes
+    };
+
+    setTasks([...tasks, newTask]);
+    setShowCreateModal(false);
+  };
+
   // 筛选任务
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.description.toLowerCase().includes(searchTerm.toLowerCase());
+      task.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
 
     return matchesSearch && matchesStatus;

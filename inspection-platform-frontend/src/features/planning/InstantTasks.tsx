@@ -20,6 +20,7 @@ import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
 import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { formatRelativeTime } from '../../lib/utils';
+import { MapSelection, Point } from './components/MapSelection';
 
 // 即时任务类型定义
 interface InstantTask {
@@ -39,6 +40,7 @@ interface InstantTask {
     location: { lat: number; lng: number };
     completed: boolean;
   }[];
+  mapPoints?: Point[];
   progress: number;
   createdAt: string;
   startedAt?: string;
@@ -124,7 +126,9 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     priority: task?.priority || 'medium',
     assignedTo: task?.assignedTo || '',
     estimatedDuration: task?.estimatedDuration || 30,
-    notes: task?.notes || ''
+
+    notes: task?.notes || '',
+    mapPoints: task?.mapPoints || []
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -159,6 +163,9 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     if (formData.estimatedDuration <= 0) {
       newErrors.estimatedDuration = '预计时长必须大于0';
     }
+    if (formData.mapPoints.length === 0) {
+      newErrors.mapPoints = '请至少选择一个巡检点';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -166,7 +173,7 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -236,6 +243,16 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
         </FormField>
       </div>
 
+      <div className="mb-4">
+        <MapSelection
+          value={formData.mapPoints}
+          onChange={(points) => setFormData({ ...formData, mapPoints: points })}
+        />
+        {errors.mapPoints && (
+          <p className="text-sm text-red-500 mt-1">{errors.mapPoints}</p>
+        )}
+      </div>
+
       <FormField label="任务描述">
         <TextArea
           value={formData.description}
@@ -271,7 +288,7 @@ function InstantTasks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
-  
+
   // 模态框状态
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -281,10 +298,10 @@ function InstantTasks() {
   // 筛选任务
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.description.toLowerCase().includes(searchTerm.toLowerCase());
+      task.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -296,7 +313,7 @@ function InstantTasks() {
 
   const handleUpdateTask = (taskData: Partial<InstantTask>) => {
     if (selectedTask?.id) {
-      setTasks(tasks.map(t => 
+      setTasks(tasks.map(t =>
         t.id === selectedTask.id ? { ...t, ...taskData } : t
       ));
       setShowEditModal(false);
@@ -313,32 +330,32 @@ function InstantTasks() {
   };
 
   const handleStartTask = (task: InstantTask) => {
-    setTasks(tasks.map(t => 
-      t.id === task.id 
+    setTasks(tasks.map(t =>
+      t.id === task.id
         ? { ...t, status: 'running', startedAt: new Date().toISOString() }
         : t
     ));
   };
 
   const handlePauseTask = (task: InstantTask) => {
-    setTasks(tasks.map(t => 
-      t.id === task.id 
+    setTasks(tasks.map(t =>
+      t.id === task.id
         ? { ...t, status: 'pending' }
         : t
     ));
   };
 
   const handleStopTask = (task: InstantTask) => {
-    setTasks(tasks.map(t => 
-      t.id === task.id 
-        ? { 
-            ...t, 
-            status: 'cancelled',
-            completedAt: new Date().toISOString(),
-            actualDuration: task.startedAt 
-              ? Math.round((new Date().getTime() - new Date(task.startedAt).getTime()) / 60000)
-              : undefined
-          }
+    setTasks(tasks.map(t =>
+      t.id === task.id
+        ? {
+          ...t,
+          status: 'cancelled',
+          completedAt: new Date().toISOString(),
+          actualDuration: task.startedAt
+            ? Math.round((new Date().getTime() - new Date(task.startedAt).getTime()) / 60000)
+            : undefined
+        }
         : t
     ));
   };
@@ -522,11 +539,10 @@ function InstantTasks() {
                     <div className="flex items-center space-x-2">
                       <div className="w-16 bg-gray-200 rounded-full h-2">
                         <div
-                          className={`h-2 rounded-full ${
-                            task.status === 'completed' ? 'bg-green-500' :
+                          className={`h-2 rounded-full ${task.status === 'completed' ? 'bg-green-500' :
                             task.status === 'failed' ? 'bg-red-500' :
-                            'bg-blue-500'
-                          }`}
+                              'bg-blue-500'
+                            }`}
                           style={{ width: `${task.progress}%` }}
                         />
                       </div>
