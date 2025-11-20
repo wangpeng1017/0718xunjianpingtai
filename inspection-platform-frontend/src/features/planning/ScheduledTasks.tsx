@@ -114,22 +114,23 @@ const mockScheduledTasks: ScheduledTask[] = [
 ];
 
 interface TaskFormProps {
+  task?: ScheduledTask;
   onSubmit: (data: any) => void;
   onCancel: () => void;
 }
 
-function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
+function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    deviceId: '',
-    priority: 'medium',
-    assignedTo: '',
-    scheduleType: 'daily',
-    scheduleTime: '09:00',
-    estimatedDuration: 30,
-    notes: '',
-    mapPoints: [] as Point[]
+    name: task?.name || '',
+    description: task?.description || '',
+    deviceId: task?.deviceId || '',
+    priority: task?.priority || 'medium',
+    assignedTo: task?.assignedTo || '',
+    scheduleType: task?.schedule.type || 'daily',
+    scheduleTime: task?.schedule.time || '09:00',
+    estimatedDuration: task?.estimatedDuration || 30,
+    notes: task?.notes || '',
+    mapPoints: task?.mapPoints || [] as Point[]
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -182,7 +183,7 @@ function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
         <FormField label="优先级">
           <Select
             value={formData.priority}
-            onChange={(value) => setFormData({ ...formData, priority: value })}
+            onChange={(value) => setFormData({ ...formData, priority: value as any })}
             options={[
               { value: 'low', label: '低' },
               { value: 'medium', label: '中' },
@@ -203,7 +204,7 @@ function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
         <FormField label="调度类型">
           <Select
             value={formData.scheduleType}
-            onChange={(value) => setFormData({ ...formData, scheduleType: value })}
+            onChange={(value) => setFormData({ ...formData, scheduleType: value as any })}
             options={[
               { value: 'once', label: '单次' },
               { value: 'daily', label: '每天' },
@@ -242,7 +243,7 @@ function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
 
       <ModalFooter>
         <Button type="button" variant="outline" onClick={onCancel}>取消</Button>
-        <Button type="submit">创建</Button>
+        <Button type="submit">{task ? '更新' : '创建'}</Button>
       </ModalFooter>
     </Form>
   );
@@ -253,6 +254,9 @@ function ScheduledTasks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<ScheduledTask | null>(null);
 
   const handleCreateTask = (formData: any) => {
     const newTask: ScheduledTask = {
@@ -281,7 +285,46 @@ function ScheduledTasks() {
     };
 
     setTasks([...tasks, newTask]);
+    setTasks([...tasks, newTask]);
     setShowCreateModal(false);
+  };
+
+  const handleUpdateTask = (formData: any) => {
+    if (!selectedTask) return;
+
+    const updatedTasks = tasks.map(t => {
+      if (t.id === selectedTask.id) {
+        return {
+          ...t,
+          name: formData.name,
+          description: formData.description,
+          deviceId: formData.deviceId,
+          priority: formData.priority,
+          assignedTo: formData.assignedTo,
+          schedule: {
+            ...t.schedule,
+            type: formData.scheduleType,
+            time: formData.scheduleTime
+          },
+          estimatedDuration: formData.estimatedDuration,
+          mapPoints: formData.mapPoints,
+          notes: formData.notes,
+          updatedAt: new Date().toISOString()
+        };
+      }
+      return t;
+    });
+
+    setTasks(updatedTasks);
+    setShowEditModal(false);
+    setSelectedTask(null);
+  };
+
+  const handleDeleteTask = () => {
+    if (!selectedTask) return;
+    setTasks(tasks.filter(t => t.id !== selectedTask.id));
+    setShowDeleteModal(false);
+    setSelectedTask(null);
   };
 
   // 筛选任务
@@ -435,10 +478,25 @@ function ScheduledTasks() {
                       <Button variant="ghost" size="sm">
                         <Play className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedTask(task);
+                          setShowEditModal(true);
+                        }}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600"
+                        onClick={() => {
+                          setSelectedTask(task);
+                          setShowDeleteModal(true);
+                        }}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -449,6 +507,54 @@ function ScheduledTasks() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* 创建任务模态框 */}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="创建计划任务"
+        size="lg"
+      >
+        <TaskForm
+          onSubmit={handleCreateTask}
+          onCancel={() => setShowCreateModal(false)}
+        />
+      </Modal>
+
+      {/* 编辑任务模态框 */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedTask(null);
+        }}
+        title="编辑计划任务"
+        size="lg"
+      >
+        <TaskForm
+          task={selectedTask || undefined}
+          onSubmit={handleUpdateTask}
+          onCancel={() => {
+            setShowEditModal(false);
+            setSelectedTask(null);
+          }}
+        />
+      </Modal>
+
+      {/* 删除确认模态框 */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setSelectedTask(null);
+        }}
+        onConfirm={handleDeleteTask}
+        title="删除任务"
+        message={`确定要删除任务 "${selectedTask?.name}" 吗？此操作不可撤销。`}
+        confirmText="删除"
+        cancelText="取消"
+        type="danger"
+      />
     </div>
   );
 }
