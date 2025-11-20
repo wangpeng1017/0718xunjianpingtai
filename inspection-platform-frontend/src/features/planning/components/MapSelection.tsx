@@ -179,9 +179,10 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                         <polyline
                             points={points.map(p => `${p.x},${p.y}`).join(' ')}
                             fill="none"
-                            stroke="#3b82f6"
-                            strokeWidth="1.5"
-                            strokeDasharray="4,2"
+                            stroke="#2563eb"
+                            strokeWidth="2"
+                            strokeDasharray="6,3"
+                            strokeOpacity="0.9"
                             vectorEffect="non-scaling-stroke"
                         />
                     </svg>
@@ -231,8 +232,8 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center space-x-2">
                                     <MapPin className={`h-4 w-4 ${index === 0 ? 'text-green-500' :
-                                            index === points.length - 1 ? 'text-red-500' :
-                                                'text-blue-500'
+                                        index === points.length - 1 ? 'text-red-500' :
+                                            'text-blue-500'
                                         }`} />
                                     <input
                                         type="text"
