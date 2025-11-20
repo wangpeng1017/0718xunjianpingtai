@@ -245,6 +245,7 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                                 </div>
                                 {!readOnly && (
                                     <button
+                                        type="button"
                                         onClick={(e) => handleRemovePoint(e, point.id)}
                                         className="text-red-500 hover:text-red-700 text-xs"
                                     >
@@ -288,6 +289,7 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                                         </label>
                                         {!readOnly && (
                                             <button
+                                                type="button"
                                                 onClick={() => handleRemoveInspectionItem(point.id, item.id)}
                                                 className="text-red-500 hover:text-red-700"
                                             >
@@ -298,6 +300,7 @@ export function MapSelection({ value = [], onChange, readOnly = false }: MapSele
                                 ))}
                                 {!readOnly && (
                                     <button
+                                        type="button"
                                         onClick={() => handleAddInspectionItem(point.id)}
                                         className="text-xs text-blue-600 hover:text-blue-700 mt-2"
                                     >
