@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Monitor,
   Activity,
@@ -51,6 +52,7 @@ function StatCard({ title, value, change, icon: Icon, trend = 'neutral' }: StatC
 import { RealTimeMapModal } from './RealTimeMapModal';
 
 function Dashboard() {
+  const navigate = useNavigate();
   const devices = useDevices();
   const tasks = useTasks();
   const [timeSeriesData] = React.useState(() => generateTimeSeriesData(7));
@@ -101,7 +103,7 @@ function Dashboard() {
           <p className="text-gray-600 mt-1">智慧巡检平台概览</p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" onClick={() => setIsMapModalOpen(true)}>
+          <Button variant="outline" onClick={() => navigate('/dashboard/map')}>
             <MapPin className="h-4 w-4 mr-2" />
             实时地图
           </Button>

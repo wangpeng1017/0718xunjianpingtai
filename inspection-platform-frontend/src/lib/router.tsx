@@ -34,6 +34,7 @@ const SystemSettings = React.lazy(() => import('../features/config/SystemSetting
 const DataStreamMonitor = React.lazy(() => import('../features/monitoring/DataStreamMonitor'));
 const AdvancedDiagnostics = React.lazy(() => import('../features/reports/AdvancedDiagnostics'));
 const PathOptimization = React.lazy(() => import('../features/planning/PathOptimization'));
+const RealTimeMapPage = React.lazy(() => import('../features/dashboard/RealTimeMapPage'));
 
 // 占位页面组件
 const PlaceholderPage = ({ title, description }: { title: string; description: string }) => (
@@ -82,6 +83,14 @@ export const router = createBrowserRouter([
         element: (
           <LoadingWrapper>
             <Dashboard />
+          </LoadingWrapper>
+        ),
+      },
+      {
+        path: 'dashboard/map',
+        element: (
+          <LoadingWrapper>
+            <RealTimeMapPage />
           </LoadingWrapper>
         ),
       },
