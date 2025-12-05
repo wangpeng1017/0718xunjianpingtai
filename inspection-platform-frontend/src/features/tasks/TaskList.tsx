@@ -1,17 +1,20 @@
 import React from 'react';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Play, 
-  Pause, 
-  Square, 
+import {
+  Plus,
+  Search,
+  Filter,
+  Play,
+  Pause,
+  Square,
   Eye,
   Edit,
   Trash2,
   Clock,
   MapPin,
-  User
+  User,
+  Video,
+  Bell,
+  Camera
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -389,6 +392,7 @@ function TaskList() {
                 <TableHead>状态</TableHead>
                 <TableHead>优先级</TableHead>
                 <TableHead>进度</TableHead>
+                <TableHead>功能状态</TableHead>
                 <TableHead>负责人</TableHead>
                 <TableHead>创建时间</TableHead>
                 <TableHead>操作</TableHead>
@@ -424,6 +428,32 @@ function TaskList() {
                         />
                       </div>
                       <span className="text-sm text-gray-600">{task.progress}%</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {/* 视频流状态 */}
+                      {task.features?.videoStream?.enabled && (
+                        <div className="flex items-center gap-1" title={`视频流: ${task.features.videoStream.status === 'active' ? '活跃' : task.features.videoStream.status === 'inactive' ? '未激活' : '错误'}`}>
+                          <Video className={`h-4 w-4 ${task.features.videoStream.status === 'active' ? 'text-green-600' : task.features.videoStream.status === 'inactive' ? 'text-gray-400' : 'text-red-600'}`} />
+                        </div>
+                      )}
+                      {/* AI报警状态 */}
+                      {task.features?.aiAlert?.enabled && (
+                        <div className="flex items-center gap-1" title={`AI报警: ${task.features.aiAlert.alertCount || 0}次`}>
+                          <Bell className={`h-4 w-4 ${(task.features.aiAlert.alertCount || 0) > 0 ? 'text-red-600' : 'text-gray-400'}`} />
+                          {(task.features.aiAlert.alertCount || 0) > 0 && (
+                            <span className="text-xs text-red-600 font-medium">{task.features.aiAlert.alertCount}</span>
+                          )}
+                        </div>
+                      )}
+                      {/* 云台控制状态 */}
+                      {task.features?.ptzControl?.enabled && (
+                        <div className="flex items-center gap-1" title={`云台控制: 预置位${task.features.ptzControl.currentPreset || 1}, 变焦${task.features.ptzControl.zoomLevel || 0}%`}>
+                          <Camera className="h-4 w-4 text-blue-600" />
+                        </div>
+                      )}
+                      {!task.features && <span className="text-xs text-gray-400">-</span>}
                     </div>
                   </TableCell>
                   <TableCell>

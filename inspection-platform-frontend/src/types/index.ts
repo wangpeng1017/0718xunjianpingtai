@@ -56,6 +56,26 @@ export interface InspectionTask {
   progress: number;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   assignedTo?: string;
+  // 任务功能配置
+  features?: {
+    videoStream?: {
+      enabled: boolean;
+      url?: string;
+      status?: 'active' | 'inactive' | 'error';
+    };
+    aiAlert?: {
+      enabled: boolean;
+      alertCount?: number;
+      lastAlertTime?: string;
+      alertTypes?: string[];
+    };
+    ptzControl?: {
+      enabled: boolean;
+      presets?: number[];
+      currentPreset?: number;
+      zoomLevel?: number;
+    };
+  };
 }
 
 // 巡检目标类型
