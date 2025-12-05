@@ -26,7 +26,7 @@ import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { useTasks, useTaskStore } from '../../stores/useTaskStore';
 import { useDevices } from '../../stores/useDeviceStore';
-import { generateMockTasks } from '../../mocks/data';
+import { mockTasks } from '../../mocks/data';
 import { formatRelativeTime, getPriorityColor } from '../../lib/utils';
 import type { InspectionTask, Device } from '../../types';
 
@@ -178,7 +178,7 @@ function TaskList() {
   // 初始化任务数据
   React.useEffect(() => {
     if (tasks.length === 0) {
-      setTasks(generateMockTasks(100));
+      setTasks(mockTasks);
     }
   }, [tasks.length, setTasks]);
 
