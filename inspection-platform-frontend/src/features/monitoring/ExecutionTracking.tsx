@@ -120,16 +120,16 @@ interface ExecutionTracking {
 // Mock数据
 const mockExecutionData: ExecutionTracking[] = [
   {
-    id: 'exec-1',
-    taskId: 'task-001',
-    taskName: '主变压器A1日常巡检',
-    deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    id: 'exec-a',
+    taskId: 'task-a',
+    taskName: 'A点巡检任务',
+    deviceId: 'device-9',
+    deviceName: '测温云台',
     status: 'running',
-    startTime: '2024-07-17T09:00:00Z',
-    currentTime: '2024-07-17T09:20:00Z',
-    estimatedEndTime: '2024-07-17T09:30:00Z',
-    progress: 67,
+    startTime: '2024-01-15T10:00:00Z',
+    currentTime: '2024-01-15T10:20:00Z',
+    estimatedEndTime: '2024-01-15T10:45:00Z',
+    progress: 45,
     currentLocation: {
       lat: 39.9042,
       lng: 116.4074,
@@ -138,9 +138,9 @@ const mockExecutionData: ExecutionTracking[] = [
     },
     currentTarget: {
       id: 'target-1',
-      name: '主变压器A1',
-      eta: '2024-07-17T09:25:00Z',
-      distance: 25
+      name: 'A点检测区域',
+      eta: '2024-01-15T10:30:00Z',
+      distance: 15
     },
     deviceMetrics: {
       battery: 78,
@@ -177,8 +177,15 @@ const mockExecutionData: ExecutionTracking[] = [
       {
         id: 'alert-1',
         type: 'warning',
-        message: '发现轻微油渍，建议关注',
-        timestamp: '2024-07-17T09:15:00Z',
+        message: '温度异常：检测到局部温度偏高',
+        timestamp: '2024-01-15T10:15:00Z',
+        acknowledged: false
+      },
+      {
+        id: 'alert-2',
+        type: 'error',
+        message: '设备故障：测温传感器响应延迟',
+        timestamp: '2024-01-15T10:18:00Z',
         acknowledged: false
       }
     ],
@@ -236,16 +243,16 @@ const mockExecutionData: ExecutionTracking[] = [
     ]
   },
   {
-    id: 'exec-2',
-    taskId: 'task-002',
-    taskName: '冷却塔紧急检查',
-    deviceId: 'device-2',
-    deviceName: '巡检机器人-02',
-    status: 'paused',
-    startTime: '2024-07-17T08:00:00Z',
-    currentTime: '2024-07-17T09:20:00Z',
-    estimatedEndTime: '2024-07-17T09:45:00Z',
-    progress: 45,
+    id: 'exec-b',
+    taskId: 'task-b',
+    taskName: 'B点巡检任务',
+    deviceId: 'device-10',
+    deviceName: '可见光云台',
+    status: 'running',
+    startTime: '2024-01-15T10:05:00Z',
+    currentTime: '2024-01-15T10:25:00Z',
+    estimatedEndTime: '2024-01-15T10:50:00Z',
+    progress: 60,
     currentLocation: {
       lat: 39.9052,
       lng: 116.4084,
@@ -254,9 +261,9 @@ const mockExecutionData: ExecutionTracking[] = [
     },
     currentTarget: {
       id: 'target-2',
-      name: '冷却塔区域',
-      eta: '2024-07-17T09:30:00Z',
-      distance: 0
+      name: 'B点监控区域',
+      eta: '2024-01-15T10:35:00Z',
+      distance: 20
     },
     deviceMetrics: {
       battery: 92,
@@ -291,18 +298,11 @@ const mockExecutionData: ExecutionTracking[] = [
     },
     alerts: [
       {
-        id: 'alert-2',
-        type: 'error',
-        message: '热成像传感器故障，需要检修',
-        timestamp: '2024-07-17T08:30:00Z',
+        id: 'alert-b1',
+        type: 'warning',
+        message: '人员入侵：检测到未授权人员进入监控区域',
+        timestamp: '2024-01-15T10:20:00Z',
         acknowledged: false
-      },
-      {
-        id: 'alert-3',
-        type: 'critical',
-        message: '检测到异常振动，建议立即停机检查',
-        timestamp: '2024-07-17T09:00:00Z',
-        acknowledged: true
       }
     ],
     path: [
@@ -332,6 +332,98 @@ const mockExecutionData: ExecutionTracking[] = [
         name: '水质检测',
         status: 'pending',
         estimatedTime: '2024-07-17T09:30:00Z'
+      }
+    ]
+  },
+  {
+    id: 'exec-e',
+    taskId: 'task-e',
+    taskName: 'E点巡检任务',
+    deviceId: 'device-14',
+    deviceName: 'TDLAS检测云台',
+    status: 'running',
+    startTime: '2024-01-15T10:10:00Z',
+    currentTime: '2024-01-15T10:30:00Z',
+    estimatedEndTime: '2024-01-15T11:00:00Z',
+    progress: 30,
+    currentLocation: {
+      lat: 39.9142,
+      lng: 116.4174,
+      altitude: 12.0,
+      accuracy: 1.8
+    },
+    currentTarget: {
+      id: 'target-3',
+      name: 'E点气体检测区域',
+      eta: '2024-01-15T10:45:00Z',
+      distance: 35
+    },
+    deviceMetrics: {
+      battery: 85,
+      temperature: 40,
+      signalStrength: 88,
+      cpuUsage: 52,
+      memoryUsage: 58,
+      storageUsage: 45
+    },
+    sensorData: {
+      timestamp: '2024-01-15T10:30:00Z',
+      camera: {
+        status: 'active',
+        resolution: '1080p',
+        frameRate: 25
+      },
+      thermal: {
+        status: 'active',
+        temperature: 55.2,
+        range: '-20°C to 150°C'
+      },
+      lidar: {
+        status: 'active',
+        range: 80,
+        accuracy: 0.08
+      },
+      gps: {
+        status: 'active',
+        satellites: 11,
+        accuracy: 1.8
+      }
+    },
+    alerts: [
+      {
+        id: 'alert-e1',
+        type: 'critical',
+        message: '气体浓度超标：检测到甲烷浓度超过安全阈值',
+        timestamp: '2024-01-15T10:25:00Z',
+        acknowledged: false
+      },
+      {
+        id: 'alert-e2',
+        type: 'warning',
+        message: '安全隐患：检测区域存在潜在泄漏风险',
+        timestamp: '2024-01-15T10:28:00Z',
+        acknowledged: false
+      }
+    ],
+    path: [
+      { lat: 39.9140, lng: 116.4172, timestamp: '2024-01-15T10:10:00Z' },
+      { lat: 39.9141, lng: 116.4173, timestamp: '2024-01-15T10:20:00Z' },
+      { lat: 39.9142, lng: 116.4174, timestamp: '2024-01-15T10:30:00Z' }
+    ],
+    checkpoints: [
+      {
+        id: 'cp-e1',
+        name: 'E点检测点1',
+        status: 'completed',
+        estimatedTime: '2024-01-15T10:15:00Z',
+        actualTime: '2024-01-15T10:15:00Z',
+        duration: 5
+      },
+      {
+        id: 'cp-e2',
+        name: 'E点检测点2',
+        status: 'approaching',
+        estimatedTime: '2024-01-15T10:35:00Z'
       }
     ]
   }
