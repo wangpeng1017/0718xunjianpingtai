@@ -17,7 +17,15 @@ import {
   Eye,
   Settings,
   RefreshCw,
-  Maximize2
+  Maximize2,
+  Video,
+  Bell,
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -598,6 +606,211 @@ function ExecutionTracking() {
                         style={{ width: `${selectedExecution.progress}%` }}
                       />
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 视频流、AI报警和云台控制 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* 实时视频流 */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center">
+                        <Video className="h-5 w-5 mr-2 text-green-600" />
+                        实时视频流
+                      </CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex items-center">
+                          <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                          <span className="text-xs text-green-600">直播中</span>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Maximize2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="relative bg-gray-900 rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                      <video
+                        src="http://10.130.9.179:8004/app/stream1.live.mp4"
+                        className="w-full h-full object-contain"
+                        autoPlay
+                        muted
+                        loop
+                      />
+                      <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white">
+                        {selectedExecution.sensorData.camera.resolution} @ {selectedExecution.sensorData.camera.frameRate}fps
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* 云台控制 */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Camera className="h-5 w-5 mr-2 text-blue-600" />
+                      云台控制
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* 方向控制 */}
+                      <div>
+                        <div className="text-sm text-gray-600 mb-2">方向控制</div>
+                        <div className="grid grid-cols-3 gap-2 w-32 mx-auto">
+                          <div></div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-10"
+                            onClick={() => console.log('PTZ: Up')}
+                          >
+                            <ChevronUp className="h-5 w-5" />
+                          </Button>
+                          <div></div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-10"
+                            onClick={() => console.log('PTZ: Left')}
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-10"
+                            onClick={() => console.log('PTZ: Center')}
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-10"
+                            onClick={() => console.log('PTZ: Right')}
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </Button>
+                          <div></div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-10"
+                            onClick={() => console.log('PTZ: Down')}
+                          >
+                            <ChevronDown className="h-5 w-5" />
+                          </Button>
+                          <div></div>
+                        </div>
+                      </div>
+
+                      {/* 变焦控制 */}
+                      <div>
+                        <div className="text-sm text-gray-600 mb-2">变焦控制</div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => console.log('Zoom: Out')}
+                          >
+                            <ZoomOut className="h-4 w-4" />
+                          </Button>
+                          <input
+                            type="range"
+                            min="1"
+                            max="100"
+                            defaultValue="50"
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => console.log('Zoom: In')}
+                          >
+                            <ZoomIn className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* 预置位 */}
+                      <div>
+                        <div className="text-sm text-gray-600 mb-2">预置位</div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[1, 2, 3, 4, 5, 6].map((preset) => (
+                            <Button
+                              key={preset}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => console.log(`Preset: ${preset}`)}
+                            >
+                              预置位 {preset}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* AI报警 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Bell className="h-5 w-5 mr-2 text-red-600" />
+                    AI智能报警
+                    {selectedExecution.alerts.filter(a => !a.acknowledged).length > 0 && (
+                      <span className="ml-2 bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
+                        {selectedExecution.alerts.filter(a => !a.acknowledged).length} 条未处理
+                      </span>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {selectedExecution.alerts.length === 0 ? (
+                      <div className="text-center py-8 text-gray-400">
+                        <Bell className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p>暂无报警信息</p>
+                      </div>
+                    ) : (
+                      selectedExecution.alerts.map((alert) => {
+                        const AlertIcon = getAlertIcon(alert.type);
+                        return (
+                          <div
+                            key={alert.id}
+                            className={`p-3 rounded-lg border ${getAlertColor(alert.type)} ${alert.acknowledged ? 'opacity-50' : ''
+                              }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start space-x-3 flex-1">
+                                <AlertIcon className="h-5 w-5 mt-0.5" />
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm">{alert.message}</div>
+                                  <div className="text-xs mt-1 opacity-75">
+                                    {formatRelativeTime(alert.timestamp)}
+                                  </div>
+                                </div>
+                              </div>
+                              {!alert.acknowledged && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => acknowledgeAlert(selectedExecution.id, alert.id)}
+                                  className="ml-2"
+                                >
+                                  <CheckCircle className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </CardContent>
               </Card>
