@@ -85,7 +85,7 @@ const mockTaskStatuses: TaskStatus[] = [
     taskName: '主变压器A1日常巡检',
     taskType: 'scheduled',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     targetId: 'target-1',
     targetName: '主变压器A1',
     assignedTo: '张工程师',
@@ -348,12 +348,11 @@ function TaskDetailModal({ task, isOpen, onClose }: TaskDetailModalProps) {
             {task.checkpoints.map((checkpoint) => (
               <div key={checkpoint.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    checkpoint.status === 'completed' ? 'bg-green-500' :
-                    checkpoint.status === 'failed' ? 'bg-red-500' :
-                    checkpoint.status === 'skipped' ? 'bg-gray-400' :
-                    'bg-yellow-500'
-                  }`} />
+                  <div className={`w-3 h-3 rounded-full ${checkpoint.status === 'completed' ? 'bg-green-500' :
+                      checkpoint.status === 'failed' ? 'bg-red-500' :
+                        checkpoint.status === 'skipped' ? 'bg-gray-400' :
+                          'bg-yellow-500'
+                    }`} />
                   <div>
                     <div className="font-medium">{checkpoint.name}</div>
                     {checkpoint.notes && (
@@ -382,7 +381,7 @@ function TaskDetailModal({ task, isOpen, onClose }: TaskDetailModalProps) {
                     <div className="flex-1">
                       <div className="font-medium">{issue.description}</div>
                       <div className="text-sm text-gray-500">
-                        {formatRelativeTime(issue.reportedAt)} • 
+                        {formatRelativeTime(issue.reportedAt)} •
                         {issue.resolved ? ' 已解决' : ' 待解决'}
                       </div>
                     </div>
@@ -400,11 +399,10 @@ function TaskDetailModal({ task, isOpen, onClose }: TaskDetailModalProps) {
             {task.approvals.map((approval, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    approval.status === 'approved' ? 'bg-green-500' :
-                    approval.status === 'rejected' ? 'bg-red-500' :
-                    'bg-yellow-500'
-                  }`} />
+                  <div className={`w-3 h-3 rounded-full ${approval.status === 'approved' ? 'bg-green-500' :
+                      approval.status === 'rejected' ? 'bg-red-500' :
+                        'bg-yellow-500'
+                    }`} />
                   <div>
                     <div className="font-medium">级别 {approval.level} - {approval.approver}</div>
                     {approval.comments && (
@@ -452,12 +450,12 @@ function TaskStatusManagement() {
   // 筛选任务
   const filteredTasks = taskStatuses.filter(task => {
     const matchesSearch = task.taskName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.assignedTo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.targetName.toLowerCase().includes(searchTerm.toLowerCase());
+      task.assignedTo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.targetName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
     const matchesType = typeFilter === 'all' || task.taskType === typeFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority && matchesType;
   });
 
@@ -704,13 +702,12 @@ function TaskStatusManagement() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <StatusIcon className={`h-4 w-4 ${
-                          task.status === 'completed' ? 'text-green-500' :
-                          task.status === 'failed' ? 'text-red-500' :
-                          task.status === 'running' ? 'text-blue-500' :
-                          task.status === 'review_required' ? 'text-yellow-500' :
-                          'text-gray-400'
-                        }`} />
+                        <StatusIcon className={`h-4 w-4 ${task.status === 'completed' ? 'text-green-500' :
+                            task.status === 'failed' ? 'text-red-500' :
+                              task.status === 'running' ? 'text-blue-500' :
+                                task.status === 'review_required' ? 'text-yellow-500' :
+                                  'text-gray-400'
+                          }`} />
                         <StatusBadge status={task.status} />
                       </div>
                     </TableCell>
@@ -718,11 +715,10 @@ function TaskStatusManagement() {
                       <div className="flex items-center space-x-2">
                         <div className="w-16 bg-gray-200 rounded-full h-2">
                           <div
-                            className={`h-2 rounded-full ${
-                              task.progress === 100 ? 'bg-green-500' :
-                              task.progress >= 50 ? 'bg-blue-500' :
-                              'bg-yellow-500'
-                            }`}
+                            className={`h-2 rounded-full ${task.progress === 100 ? 'bg-green-500' :
+                                task.progress >= 50 ? 'bg-blue-500' :
+                                  'bg-yellow-500'
+                              }`}
                             style={{ width: `${task.progress}%` }}
                           />
                         </div>

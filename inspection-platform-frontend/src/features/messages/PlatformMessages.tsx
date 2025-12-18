@@ -79,7 +79,7 @@ const mockMessages: PlatformMessage[] = [
     status: 'unread',
     sender: {
       id: 'device-1',
-      name: '巡检无人机-01',
+      name: '巡检机器狗-01',
       type: 'device'
     },
     recipients: [
@@ -235,7 +235,7 @@ function MessageForm({ message, onSubmit, onCancel }: MessageFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -346,7 +346,7 @@ function PlatformMessages() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [selectedMessage, setSelectedMessage] = useState<PlatformMessage | null>(null);
-  
+
   // 模态框状态
   const [showSendModal, setShowSendModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -355,11 +355,11 @@ function PlatformMessages() {
   // 筛选消息
   const filteredMessages = messages.filter(message => {
     const matchesSearch = message.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         message.content.toLowerCase().includes(searchTerm.toLowerCase());
+      message.content.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || message.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || message.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || message.priority === priorityFilter;
-    
+
     return matchesSearch && matchesType && matchesStatus && matchesPriority;
   });
 
@@ -370,8 +370,8 @@ function PlatformMessages() {
   };
 
   const handleMarkAsRead = (messageId: string) => {
-    setMessages(messages.map(msg => 
-      msg.id === messageId 
+    setMessages(messages.map(msg =>
+      msg.id === messageId
         ? { ...msg, status: 'read', readCount: msg.readCount + 1 }
         : msg
     ));
@@ -598,13 +598,12 @@ function PlatformMessages() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        message.type === 'alert' ? 'bg-red-100 text-red-800' :
-                        message.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                        message.type === 'success' ? 'bg-green-100 text-green-800' :
-                        message.type === 'error' ? 'bg-red-100 text-red-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs ${message.type === 'alert' ? 'bg-red-100 text-red-800' :
+                          message.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                            message.type === 'success' ? 'bg-green-100 text-green-800' :
+                              message.type === 'error' ? 'bg-red-100 text-red-800' :
+                                'bg-blue-100 text-blue-800'
+                        }`}>
                         {message.type}
                       </span>
                     </TableCell>

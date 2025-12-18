@@ -17,7 +17,6 @@ import {
   Settings,
   Download,
   Upload,
-  Wrench,
   Package,
   TrendingUp,
   BarChart3
@@ -112,7 +111,7 @@ const mockMaintenances: DeviceMaintenance[] = [
   {
     id: 'maint-1',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     deviceType: '无人机',
     maintenanceType: 'preventive',
     priority: 'medium',
@@ -496,7 +495,7 @@ function MaintenanceForm({ maintenance, onSubmit, onCancel }: MaintenanceFormPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -662,7 +661,7 @@ function DeviceMaintenance() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [selectedMaintenance, setSelectedMaintenance] = useState<DeviceMaintenance | null>(null);
-  
+
   // 模态框状态
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -674,12 +673,12 @@ function DeviceMaintenance() {
       setMaintenances(prev => prev.map(maintenance => {
         const now = new Date();
         const plannedDate = new Date(maintenance.schedule.plannedDate);
-        
+
         // 检查是否过期
         if (maintenance.status === 'planned' && now > plannedDate) {
           return { ...maintenance, status: 'overdue' };
         }
-        
+
         // 模拟进行中的维护进度
         if (maintenance.status === 'in_progress') {
           const updatedTasks = maintenance.tasks.map(task => {
@@ -688,10 +687,10 @@ function DeviceMaintenance() {
             }
             return task;
           });
-          
+
           return { ...maintenance, tasks: updatedTasks };
         }
-        
+
         return maintenance;
       }));
     }, 10000);
@@ -702,12 +701,12 @@ function DeviceMaintenance() {
   // 筛选维护记录
   const filteredMaintenances = maintenances.filter(maintenance => {
     const matchesSearch = maintenance.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         maintenance.deviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         maintenance.description.toLowerCase().includes(searchTerm.toLowerCase());
+      maintenance.deviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      maintenance.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || maintenance.maintenanceType === typeFilter;
     const matchesStatus = statusFilter === 'all' || maintenance.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || maintenance.priority === priorityFilter;
-    
+
     return matchesSearch && matchesType && matchesStatus && matchesPriority;
   });
 
@@ -719,7 +718,7 @@ function DeviceMaintenance() {
 
   const handleUpdateMaintenance = (maintenanceData: Partial<DeviceMaintenance>) => {
     if (selectedMaintenance?.id) {
-      setMaintenances(maintenances.map(m => 
+      setMaintenances(maintenances.map(m =>
         m.id === selectedMaintenance.id ? { ...m, ...maintenanceData } : m
       ));
       setShowEditModal(false);
@@ -731,7 +730,7 @@ function DeviceMaintenance() {
     setMaintenances(maintenances.map(m => {
       if (m.id === maintenanceId) {
         const updatedMaintenance = { ...m, status: newStatus };
-        
+
         // 更新执行信息
         if (newStatus === 'in_progress' && !m.execution.startedAt) {
           updatedMaintenance.execution.startedAt = new Date().toISOString();
@@ -741,7 +740,7 @@ function DeviceMaintenance() {
             (new Date().getTime() - new Date(m.execution.startedAt || new Date()).getTime()) / 60000
           );
         }
-        
+
         return updatedMaintenance;
       }
       return m;
@@ -1251,16 +1250,14 @@ function DeviceMaintenance() {
                 <h4 className="font-medium text-gray-900 mb-2">执行问题</h4>
                 <div className="space-y-2">
                   {selectedMaintenance.execution.issues.map((issue) => (
-                    <div key={issue.id} className={`p-3 rounded-lg border-l-4 ${
-                      issue.severity === 'high' ? 'bg-red-50 border-red-400' :
+                    <div key={issue.id} className={`p-3 rounded-lg border-l-4 ${issue.severity === 'high' ? 'bg-red-50 border-red-400' :
                       issue.severity === 'medium' ? 'bg-yellow-50 border-yellow-400' :
-                      'bg-blue-50 border-blue-400'
-                    }`}>
+                        'bg-blue-50 border-blue-400'
+                      }`}>
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{issue.description}</div>
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          issue.resolved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded text-xs ${issue.resolved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
                           {issue.resolved ? '已解决' : '未解决'}
                         </span>
                       </div>
@@ -1284,7 +1281,7 @@ function DeviceMaintenance() {
                     <div className="text-blue-600 font-medium">执行结果</div>
                     <div className="text-2xl font-bold text-blue-800">
                       {selectedMaintenance.results.outcome === 'successful' ? '成功' :
-                       selectedMaintenance.results.outcome === 'partial' ? '部分' : '失败'}
+                        selectedMaintenance.results.outcome === 'partial' ? '部分' : '失败'}
                     </div>
                   </div>
                   <div className="p-3 bg-green-50 rounded-lg">

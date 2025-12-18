@@ -11,7 +11,6 @@ import {
   Activity,
   HardDrive,
   Cpu,
-  HardDrive,
   Network,
   Clock,
   CheckCircle,
@@ -112,7 +111,7 @@ const mockDataPool: DataPoolEntry[] = [
     category: 'inspection',
     source: {
       deviceId: 'device-1',
-      deviceName: '巡检无人机-01',
+      deviceName: '巡检机器狗-01',
       targetId: 'target-1',
       targetName: '主变压器A1'
     },
@@ -157,7 +156,7 @@ const mockDataPool: DataPoolEntry[] = [
     category: 'inspection',
     source: {
       deviceId: 'device-1',
-      deviceName: '巡检无人机-01',
+      deviceName: '巡检机器狗-01',
       targetId: 'target-1',
       targetName: '主变压器A1'
     },
@@ -304,7 +303,7 @@ function DataPool() {
   // 筛选数据
   const filteredEntries = dataEntries.filter(entry => {
     const matchesSearch = entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      entry.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = typeFilter === 'all' || entry.type === typeFilter;
     const matchesCategory = categoryFilter === 'all' || entry.category === categoryFilter;
     const matchesStatus = statusFilter === 'all' || entry.lifecycle.status === statusFilter;
@@ -317,13 +316,13 @@ function DataPool() {
     setDataEntries(dataEntries.map(e =>
       e.id === entry.id
         ? {
-            ...e,
-            access: {
-              ...e.access,
-              downloadCount: e.access.downloadCount + 1,
-              lastAccessed: new Date().toISOString()
-            }
+          ...e,
+          access: {
+            ...e.access,
+            downloadCount: e.access.downloadCount + 1,
+            lastAccessed: new Date().toISOString()
           }
+        }
         : e
     ));
     console.log(`下载文件: ${entry.name}`);
@@ -333,13 +332,13 @@ function DataPool() {
     setDataEntries(dataEntries.map(e =>
       e.id === entryId
         ? {
-            ...e,
-            lifecycle: {
-              ...e.lifecycle,
-              status: 'archived',
-              updatedAt: new Date().toISOString()
-            }
+          ...e,
+          lifecycle: {
+            ...e.lifecycle,
+            status: 'archived',
+            updatedAt: new Date().toISOString()
           }
+        }
         : e
     ));
   };
@@ -484,31 +483,28 @@ function DataPool() {
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('entries')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'entries'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'entries'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
           >
             数据条目
           </button>
           <button
             onClick={() => setActiveTab('stats')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'stats'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'stats'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
           >
             统计分析
           </button>
           <button
             onClick={() => setActiveTab('storage')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'storage'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'storage'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
           >
             存储管理
           </button>
@@ -653,11 +649,10 @@ function DataPool() {
                         <div className="flex items-center space-x-2">
                           <div className="w-16 bg-gray-200 rounded-full h-2">
                             <div
-                              className={`h-2 rounded-full ${
-                                entry.quality.score >= 90 ? 'bg-green-500' :
+                              className={`h-2 rounded-full ${entry.quality.score >= 90 ? 'bg-green-500' :
                                 entry.quality.score >= 70 ? 'bg-yellow-500' :
-                                'bg-red-500'
-                              }`}
+                                  'bg-red-500'
+                                }`}
                               style={{ width: `${entry.quality.score}%` }}
                             />
                           </div>

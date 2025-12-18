@@ -109,7 +109,7 @@ const mockStatistics: StatisticsData = {
   devicePerformance: [
     {
       deviceId: 'device-1',
-      deviceName: '巡检无人机-01',
+      deviceName: '巡检机器狗-01',
       tasksCompleted: 234,
       successRate: 96.2,
       avgDuration: 28.5,
@@ -364,51 +364,46 @@ function StatisticsAnalysis() {
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'overview'
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'overview'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             趋势分析
           </button>
           <button
             onClick={() => setActiveTab('devices')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'devices'
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'devices'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             设备性能
           </button>
           <button
             onClick={() => setActiveTab('targets')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'targets'
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'targets'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             目标分析
           </button>
           <button
             onClick={() => setActiveTab('issues')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'issues'
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'issues'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             问题分析
           </button>
           <button
             onClick={() => setActiveTab('operators')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'operators'
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'operators'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             操作员绩效
           </button>
@@ -545,11 +540,10 @@ function StatisticsAnalysis() {
                         <div className="flex items-center space-x-2">
                           <div className="w-16 bg-gray-200 rounded-full h-2">
                             <div
-                              className={`h-2 rounded-full ${
-                                device.successRate >= 95 ? 'bg-green-500' :
-                                device.successRate >= 90 ? 'bg-yellow-500' :
-                                'bg-red-500'
-                              }`}
+                              className={`h-2 rounded-full ${device.successRate >= 95 ? 'bg-green-500' :
+                                  device.successRate >= 90 ? 'bg-yellow-500' :
+                                    'bg-red-500'
+                                }`}
                               style={{ width: `${device.successRate}%` }}
                             />
                           </div>
@@ -561,11 +555,10 @@ function StatisticsAnalysis() {
                         <div className="flex items-center space-x-2">
                           <div className="w-16 bg-gray-200 rounded-full h-2">
                             <div
-                              className={`h-2 rounded-full ${
-                                device.uptime >= 95 ? 'bg-green-500' :
-                                device.uptime >= 90 ? 'bg-yellow-500' :
-                                'bg-red-500'
-                              }`}
+                              className={`h-2 rounded-full ${device.uptime >= 95 ? 'bg-green-500' :
+                                  device.uptime >= 90 ? 'bg-yellow-500' :
+                                    'bg-red-500'
+                                }`}
                               style={{ width: `${device.uptime}%` }}
                             />
                           </div>
@@ -574,11 +567,10 @@ function StatisticsAnalysis() {
                       </td>
                       <td className="py-3 px-4">{formatRelativeTime(device.lastMaintenance)}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          device.status === 'active' ? 'bg-green-100 text-green-800' :
-                          device.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${device.status === 'active' ? 'bg-green-100 text-green-800' :
+                            device.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                          }`}>
                           {device.status}
                         </span>
                       </td>
@@ -740,11 +732,10 @@ function StatisticsAnalysis() {
                           <div className="flex items-center space-x-2">
                             <div className="w-16 bg-gray-200 rounded-full h-2">
                               <div
-                                className={`h-2 rounded-full ${
-                                  completionRate >= 95 ? 'bg-green-500' :
-                                  completionRate >= 90 ? 'bg-yellow-500' :
-                                  'bg-red-500'
-                                }`}
+                                className={`h-2 rounded-full ${completionRate >= 95 ? 'bg-green-500' :
+                                    completionRate >= 90 ? 'bg-yellow-500' :
+                                      'bg-red-500'
+                                  }`}
                                 style={{ width: `${completionRate}%` }}
                               />
                             </div>
@@ -754,15 +745,14 @@ function StatisticsAnalysis() {
                         <td className="py-3 px-4">{operator.successRate}%</td>
                         <td className="py-3 px-4">{operator.avgResponseTime}分钟</td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            performanceScore >= 95 ? 'bg-green-100 text-green-800' :
-                            performanceScore >= 90 ? 'bg-yellow-100 text-yellow-800' :
-                            performanceScore >= 80 ? 'bg-orange-100 text-orange-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`px-2 py-1 rounded-full text-xs ${performanceScore >= 95 ? 'bg-green-100 text-green-800' :
+                              performanceScore >= 90 ? 'bg-yellow-100 text-yellow-800' :
+                                performanceScore >= 80 ? 'bg-orange-100 text-orange-800' :
+                                  'bg-red-100 text-red-800'
+                            }`}>
                             {performanceScore >= 95 ? '优秀' :
-                             performanceScore >= 90 ? '良好' :
-                             performanceScore >= 80 ? '一般' : '需改进'}
+                              performanceScore >= 90 ? '良好' :
+                                performanceScore >= 80 ? '一般' : '需改进'}
                           </span>
                         </td>
                       </tr>

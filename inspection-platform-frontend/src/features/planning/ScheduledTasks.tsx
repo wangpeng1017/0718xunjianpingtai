@@ -64,7 +64,7 @@ const mockScheduledTasks: ScheduledTask[] = [
     name: '东区日常巡检',
     description: '每日上午9点执行东区设备巡检',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     status: 'active',
     priority: 'medium',
     assignedTo: '张工程师',

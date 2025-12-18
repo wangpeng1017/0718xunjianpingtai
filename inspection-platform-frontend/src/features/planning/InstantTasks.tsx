@@ -56,7 +56,7 @@ const mockInstantTasks: InstantTask[] = [
     name: '紧急设备检查',
     description: '对A区域设备进行紧急安全检查',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     priority: 'urgent',
     status: 'running',
     assignedTo: '张工程师',

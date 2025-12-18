@@ -105,7 +105,7 @@ const mockExceptions: Exception[] = [
     source: {
       type: 'device',
       id: 'device-1',
-      name: '巡检无人机-01',
+      name: '巡检机器狗-01',
       location: {
         lat: 39.9042,
         lng: 116.4074,
@@ -412,7 +412,7 @@ function ExceptionForm({ exception, onSubmit, onCancel }: ExceptionFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -542,7 +542,7 @@ function ExceptionHandling() {
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedExceptionId, setSelectedExceptionId] = useState<string | null>(null);
-  
+
   // 模态框状态
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -592,7 +592,7 @@ function ExceptionHandling() {
             details: '自动检测到异常事件'
           }]
         };
-        
+
         setExceptions(prev => [newException, ...prev]);
       }
     }, 30000); // 每30秒检查一次
@@ -603,16 +603,16 @@ function ExceptionHandling() {
   // 筛选异常
   const filteredExceptions = exceptions.filter(exception => {
     const matchesSearch = exception.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exception.description.toLowerCase().includes(searchTerm.toLowerCase());
+      exception.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || exception.type === typeFilter;
     const matchesSeverity = severityFilter === 'all' || exception.severity === severityFilter;
     const matchesStatus = statusFilter === 'all' || exception.status === statusFilter;
-    
+
     return matchesSearch && matchesType && matchesSeverity && matchesStatus;
   });
 
-  const selectedExceptionData = selectedExceptionId 
-    ? exceptions.find(e => e.id === selectedExceptionId) 
+  const selectedExceptionData = selectedExceptionId
+    ? exceptions.find(e => e.id === selectedExceptionId)
     : null;
 
   // 事件处理函数
@@ -623,7 +623,7 @@ function ExceptionHandling() {
 
   const handleUpdateException = (exceptionData: Partial<Exception>) => {
     if (selectedExceptionId) {
-      setExceptions(exceptions.map(e => 
+      setExceptions(exceptions.map(e =>
         e.id === selectedExceptionId ? { ...e, ...exceptionData } : e
       ));
       setShowEditModal(false);
@@ -643,7 +643,7 @@ function ExceptionHandling() {
     setExceptions(exceptions.map(e => {
       if (e.id === exceptionId) {
         const updatedException = { ...e, status: newStatus };
-        
+
         // 添加时间线记录
         const timelineEntry = {
           id: `tl-${Date.now()}`,
@@ -652,15 +652,15 @@ function ExceptionHandling() {
           actor: '当前用户',
           details: `异常状态从${e.status}变更为${newStatus}`
         };
-        
+
         updatedException.timeline = [...e.timeline, timelineEntry];
-        
+
         if (newStatus === 'acknowledged') {
           updatedException.acknowledgedAt = new Date().toISOString();
         } else if (newStatus === 'resolved') {
           updatedException.resolvedAt = new Date().toISOString();
         }
-        
+
         return updatedException;
       }
       return e;
@@ -892,12 +892,11 @@ function ExceptionHandling() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        exception.severity === 'critical' ? 'bg-red-100 text-red-800' :
-                        exception.severity === 'high' ? 'bg-orange-100 text-orange-800' :
-                        exception.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs ${exception.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                          exception.severity === 'high' ? 'bg-orange-100 text-orange-800' :
+                            exception.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-green-100 text-green-800'
+                        }`}>
                         {exception.severity}
                       </span>
                     </TableCell>
@@ -1051,12 +1050,11 @@ function ExceptionHandling() {
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">{selectedExceptionData.title}</h3>
                 <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    selectedExceptionData.severity === 'critical' ? 'bg-red-100 text-red-800' :
-                    selectedExceptionData.severity === 'high' ? 'bg-orange-100 text-orange-800' :
-                    selectedExceptionData.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-green-100 text-green-800'
-                  }`}>
+                  <span className={`px-2 py-1 rounded-full text-xs ${selectedExceptionData.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                      selectedExceptionData.severity === 'high' ? 'bg-orange-100 text-orange-800' :
+                        selectedExceptionData.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                    }`}>
                     {selectedExceptionData.severity}
                   </span>
                   <StatusBadge status={selectedExceptionData.status} />

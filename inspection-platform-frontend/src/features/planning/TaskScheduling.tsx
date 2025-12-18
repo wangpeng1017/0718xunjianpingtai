@@ -116,7 +116,7 @@ const mockSchedules: TaskSchedule[] = [
         id: 'task-1',
         name: '主变压器A1检查',
         deviceId: 'device-1',
-        deviceName: '巡检无人机-01',
+        deviceName: '巡检机器狗-01',
         targetIds: ['target-1'],
         estimatedDuration: 15,
         dependencies: [],
@@ -126,7 +126,7 @@ const mockSchedules: TaskSchedule[] = [
         id: 'task-2',
         name: '配电柜B2检查',
         deviceId: 'device-1',
-        deviceName: '巡检无人机-01',
+        deviceName: '巡检机器狗-01',
         targetIds: ['target-2'],
         estimatedDuration: 10,
         dependencies: ['task-1'],
@@ -327,7 +327,7 @@ function ScheduleForm({ schedule, onSubmit, onCancel }: ScheduleFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -479,7 +479,7 @@ function TaskScheduling() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedSchedule, setSelectedSchedule] = useState<TaskSchedule | null>(null);
-  
+
   // 模态框状态
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -508,10 +508,10 @@ function TaskScheduling() {
   // 筛选调度
   const filteredSchedules = schedules.filter(schedule => {
     const matchesSearch = schedule.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         schedule.description.toLowerCase().includes(searchTerm.toLowerCase());
+      schedule.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || schedule.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || schedule.status === statusFilter;
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -523,7 +523,7 @@ function TaskScheduling() {
 
   const handleUpdateSchedule = (scheduleData: Partial<TaskSchedule>) => {
     if (selectedSchedule?.id) {
-      setSchedules(schedules.map(s => 
+      setSchedules(schedules.map(s =>
         s.id === selectedSchedule.id ? { ...s, ...scheduleData } : s
       ));
       setShowEditModal(false);
@@ -653,7 +653,7 @@ function TaskScheduling() {
                 <p className="text-sm text-gray-600">成功率</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {schedules.reduce((sum, s) => sum + s.execution.successCount, 0) /
-                   Math.max(schedules.reduce((sum, s) => sum + s.execution.runCount, 0), 1) * 100
+                    Math.max(schedules.reduce((sum, s) => sum + s.execution.runCount, 0), 1) * 100
                   }%
                 </p>
               </div>
@@ -750,13 +750,12 @@ function TaskScheduling() {
                   <TableRow key={schedule.id}>
                     <TableCell>
                       <div className="flex items-center space-x-3">
-                        <StatusIcon className={`h-5 w-5 ${
-                          schedule.status === 'running' ? 'text-green-500' :
-                          schedule.status === 'scheduled' ? 'text-blue-500' :
-                          schedule.status === 'paused' ? 'text-yellow-500' :
-                          schedule.status === 'failed' ? 'text-red-500' :
-                          'text-gray-400'
-                        }`} />
+                        <StatusIcon className={`h-5 w-5 ${schedule.status === 'running' ? 'text-green-500' :
+                            schedule.status === 'scheduled' ? 'text-blue-500' :
+                              schedule.status === 'paused' ? 'text-yellow-500' :
+                                schedule.status === 'failed' ? 'text-red-500' :
+                                  'text-gray-400'
+                          }`} />
                         <div>
                           <div className="font-medium">{schedule.name}</div>
                           <div className="text-sm text-gray-500 truncate max-w-xs">
@@ -819,11 +818,10 @@ function TaskScheduling() {
                     <TableCell>
                       {schedule.execution.runCount > 0 ? (
                         <div className="text-sm">
-                          <div className={`font-medium ${
-                            successRate >= 90 ? 'text-green-600' :
-                            successRate >= 70 ? 'text-yellow-600' :
-                            'text-red-600'
-                          }`}>
+                          <div className={`font-medium ${successRate >= 90 ? 'text-green-600' :
+                              successRate >= 70 ? 'text-yellow-600' :
+                                'text-red-600'
+                            }`}>
                             {successRate.toFixed(1)}%
                           </div>
                           <div className="text-gray-500">

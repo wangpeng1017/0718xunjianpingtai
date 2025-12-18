@@ -55,7 +55,7 @@ const mockProtocols: ProtocolInterface[] = [
     version: '3.1.1',
     description: '用于设备消息传输的MQTT协议接口',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     endpoint: 'mqtt://broker.example.com',
     port: 1883,
     authentication: {
@@ -107,7 +107,7 @@ const mockProtocols: ProtocolInterface[] = [
     version: '2.0',
     description: '实时流传输协议，用于视频数据传输',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     endpoint: 'rtsp://camera.example.com',
     port: 554,
     authentication: {
@@ -204,7 +204,7 @@ function ProtocolForm({ protocol, onSubmit, onCancel }: ProtocolFormProps) {
 
   // Mock设备数据
   const devices = [
-    { value: 'device-1', label: '巡检无人机-01' },
+    { value: 'device-1', label: '巡检机器狗-01' },
     { value: 'device-2', label: '巡检机器人-02' },
     { value: 'device-3', label: '安防机器人-03' },
     { value: 'device-4', label: '环境传感器-04' }

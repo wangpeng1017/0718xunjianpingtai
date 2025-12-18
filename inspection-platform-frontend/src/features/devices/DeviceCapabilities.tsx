@@ -75,7 +75,7 @@ const mockCapabilities: DeviceCapability[] = [
     category: 'video',
     description: '支持4K高清视频实时采集和传输',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     status: 'active',
     dataTypes: ['video/mp4', 'image/jpeg'],
     parameters: {
@@ -235,7 +235,7 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
 
   // Mock设备数据
   const devices = [
-    { value: 'device-1', label: '巡检无人机-01' },
+    { value: 'device-1', label: '巡检机器狗-01' },
     { value: 'device-2', label: '巡检机器人-02' },
     { value: 'device-3', label: '安防机器人-03' },
     { value: 'device-4', label: '环境传感器-04' }
