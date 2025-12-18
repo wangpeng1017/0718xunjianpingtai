@@ -8,7 +8,6 @@ import {
   Activity,
   Zap,
   Thermometer,
-  Battery,
   Wifi,
   Camera,
   AlertTriangle,
@@ -49,12 +48,6 @@ interface ExecutionTracking {
   currentTime: string;
   estimatedEndTime: string;
   progress: number;
-  currentLocation: {
-    lat: number;
-    lng: number;
-    altitude: number;
-    accuracy: number;
-  };
   currentTarget: {
     id: string;
     name: string;
@@ -62,7 +55,6 @@ interface ExecutionTracking {
     distance: number; // 距离（米）
   };
   deviceMetrics: {
-    battery: number;
     temperature: number;
     signalStrength: number;
     cpuUsage: number;
@@ -99,11 +91,6 @@ interface ExecutionTracking {
     timestamp: string;
     acknowledged: boolean;
   }[];
-  path: {
-    lat: number;
-    lng: number;
-    timestamp: string;
-  }[];
   checkpoints: {
     id: string;
     name: string;
@@ -135,12 +122,6 @@ const mockExecutionData: ExecutionTracking[] = [
     currentTime: "2024-01-15T10:20:00Z",
     estimatedEndTime: "2024-01-15T10:45:00Z",
     progress: 45,
-    currentLocation: {
-      lat: 39.9042,
-      lng: 116.4074,
-      altitude: 15.5,
-      accuracy: 2.1,
-    },
     currentTarget: {
       id: "target-1",
       name: "A点检测区域",
@@ -148,7 +129,6 @@ const mockExecutionData: ExecutionTracking[] = [
       distance: 15,
     },
     deviceMetrics: {
-      battery: 78,
       temperature: 42,
       signalStrength: 85,
       cpuUsage: 45,
@@ -193,11 +173,6 @@ const mockExecutionData: ExecutionTracking[] = [
         timestamp: "2024-01-15T10:18:00Z",
         acknowledged: false,
       },
-    ],
-    path: [
-      { lat: 39.904, lng: 116.4072, timestamp: "2024-07-17T09:00:00Z" },
-      { lat: 39.9041, lng: 116.4073, timestamp: "2024-07-17T09:10:00Z" },
-      { lat: 39.9042, lng: 116.4074, timestamp: "2024-07-17T09:20:00Z" },
     ],
     checkpoints: [
       {
@@ -317,12 +292,6 @@ const mockExecutionData: ExecutionTracking[] = [
     currentTime: "2024-01-15T10:25:00Z",
     estimatedEndTime: "2024-01-15T10:50:00Z",
     progress: 60,
-    currentLocation: {
-      lat: 39.9052,
-      lng: 116.4084,
-      altitude: 0,
-      accuracy: 1.5,
-    },
     currentTarget: {
       id: "target-2",
       name: "B点监控区域",
@@ -330,7 +299,6 @@ const mockExecutionData: ExecutionTracking[] = [
       distance: 20,
     },
     deviceMetrics: {
-      battery: 92,
       temperature: 38,
       signalStrength: 92,
       cpuUsage: 35,
@@ -369,11 +337,6 @@ const mockExecutionData: ExecutionTracking[] = [
         acknowledged: false,
       },
     ],
-    path: [
-      { lat: 39.905, lng: 116.4082, timestamp: "2024-07-17T08:00:00Z" },
-      { lat: 39.9051, lng: 116.4083, timestamp: "2024-07-17T08:30:00Z" },
-      { lat: 39.9052, lng: 116.4084, timestamp: "2024-07-17T09:00:00Z" },
-    ],
     checkpoints: [
       {
         id: "cp-5",
@@ -410,12 +373,6 @@ const mockExecutionData: ExecutionTracking[] = [
     currentTime: "2024-01-15T10:30:00Z",
     estimatedEndTime: "2024-01-15T11:00:00Z",
     progress: 30,
-    currentLocation: {
-      lat: 39.9142,
-      lng: 116.4174,
-      altitude: 12.0,
-      accuracy: 1.8,
-    },
     currentTarget: {
       id: "target-3",
       name: "E点气体检测区域",
@@ -423,7 +380,6 @@ const mockExecutionData: ExecutionTracking[] = [
       distance: 35,
     },
     deviceMetrics: {
-      battery: 85,
       temperature: 40,
       signalStrength: 88,
       cpuUsage: 52,
@@ -469,11 +425,6 @@ const mockExecutionData: ExecutionTracking[] = [
         acknowledged: false,
       },
     ],
-    path: [
-      { lat: 39.914, lng: 116.4172, timestamp: "2024-01-15T10:10:00Z" },
-      { lat: 39.9141, lng: 116.4173, timestamp: "2024-01-15T10:20:00Z" },
-      { lat: 39.9142, lng: 116.4174, timestamp: "2024-01-15T10:30:00Z" },
-    ],
     checkpoints: [
       {
         id: "cp-e1",
@@ -512,10 +463,6 @@ function ExecutionTracking() {
           progress: Math.min(exec.progress + Math.random() * 2, 100),
           deviceMetrics: {
             ...exec.deviceMetrics,
-            battery: Math.max(
-              exec.deviceMetrics.battery - Math.random() * 0.5,
-              0,
-            ),
             temperature:
               exec.deviceMetrics.temperature + (Math.random() - 0.5) * 2,
             cpuUsage: Math.max(
@@ -665,25 +612,23 @@ function ExecutionTracking() {
                   return (
                     <div
                       key={execution.id}
-                      className={`p-4 cursor-pointer border-l-4 hover:bg-gray-50 ${
-                        selectedExecution?.id === execution.id
-                          ? "bg-blue-50 border-blue-500"
-                          : "border-transparent"
-                      }`}
+                      className={`p-4 cursor-pointer border-l-4 hover:bg-gray-50 ${selectedExecution?.id === execution.id
+                        ? "bg-blue-50 border-blue-500"
+                        : "border-transparent"
+                        }`}
                       onClick={() => setSelectedExecution(execution)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <StatusIcon
-                            className={`h-5 w-5 ${
-                              execution.status === "running"
-                                ? "text-green-500"
-                                : execution.status === "paused"
-                                  ? "text-yellow-500"
-                                  : execution.status === "emergency_stop"
-                                    ? "text-red-500"
-                                    : "text-gray-400"
-                            }`}
+                            className={`h-5 w-5 ${execution.status === "running"
+                              ? "text-green-500"
+                              : execution.status === "paused"
+                                ? "text-yellow-500"
+                                : execution.status === "emergency_stop"
+                                  ? "text-red-500"
+                                  : "text-gray-400"
+                              }`}
                           />
                           <div>
                             <div className="font-medium text-sm">
@@ -701,28 +646,27 @@ function ExecutionTracking() {
                           <div className="text-xs text-gray-500">
                             {execution.alerts.filter((a) => !a.acknowledged)
                               .length > 0 && (
-                              <span className="text-red-500">
-                                {
-                                  execution.alerts.filter(
-                                    (a) => !a.acknowledged,
-                                  ).length
-                                }{" "}
-                                警告
-                              </span>
-                            )}
+                                <span className="text-red-500">
+                                  {
+                                    execution.alerts.filter(
+                                      (a) => !a.acknowledged,
+                                    ).length
+                                  }{" "}
+                                  警告
+                                </span>
+                              )}
                           </div>
                         </div>
                       </div>
                       <div className="mt-2">
                         <div className="w-full bg-gray-200 rounded-full h-1.5">
                           <div
-                            className={`h-1.5 rounded-full ${
-                              execution.status === "running"
-                                ? "bg-green-500"
-                                : execution.status === "paused"
-                                  ? "bg-yellow-500"
-                                  : "bg-gray-400"
-                            }`}
+                            className={`h-1.5 rounded-full ${execution.status === "running"
+                              ? "bg-green-500"
+                              : execution.status === "paused"
+                                ? "bg-yellow-500"
+                                : "bg-gray-400"
+                              }`}
                             style={{ width: `${execution.progress}%` }}
                           />
                         </div>
@@ -793,17 +737,7 @@ function ExecutionTracking() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <div className="text-sm text-gray-500">当前位置</div>
-                      <div className="flex items-center mt-1">
-                        <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                        <span className="text-sm">
-                          {selectedExecution.currentLocation.lat.toFixed(4)},
-                          {selectedExecution.currentLocation.lng.toFixed(4)}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <div className="text-sm text-gray-500">当前目标</div>
                       <div className="text-sm font-medium mt-1">
@@ -998,16 +932,16 @@ function ExecutionTracking() {
                     <Bell className="h-5 w-5 mr-2 text-red-600" /> AI智能报警{" "}
                     {selectedExecution.alerts.filter((a) => !a.acknowledged)
                       .length > 0 && (
-                      <span className="ml-2 bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
-                        {" "}
-                        {
-                          selectedExecution.alerts.filter(
-                            (a) => !a.acknowledged,
-                          ).length
-                        }{" "}
-                        条未处理{" "}
-                      </span>
-                    )}{" "}
+                        <span className="ml-2 bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
+                          {" "}
+                          {
+                            selectedExecution.alerts.filter(
+                              (a) => !a.acknowledged,
+                            ).length
+                          }{" "}
+                          条未处理{" "}
+                        </span>
+                      )}{" "}
                   </CardTitle>{" "}
                 </CardHeader>{" "}
                 <CardContent>
@@ -1083,7 +1017,7 @@ function ExecutionTracking() {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

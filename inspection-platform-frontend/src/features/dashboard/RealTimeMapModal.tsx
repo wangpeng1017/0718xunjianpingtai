@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Modal } from '../../components/ui/Modal';
 import {
     Camera,
-    Battery,
     Wifi,
     Move,
     ZoomIn,
@@ -29,9 +28,9 @@ interface RealTimeMapModalProps {
 
 // 模拟机器人数据
 const mockRobots = [
-    { id: 'robot-001', name: '巡检机器人-01', status: 'online', battery: 85, signal: 92, task: '日常巡检' },
-    { id: 'robot-002', name: '巡检机器人-02', status: 'charging', battery: 100, signal: 95, task: '待机中' },
-    { id: 'robot-003', name: '安防机器人-03', status: 'offline', battery: 0, signal: 0, task: '离线' },
+    { id: 'robot-001', name: '巡检机器人-01', status: 'online', signal: 92, task: '日常巡检' },
+    { id: 'robot-002', name: '巡检机器人-02', status: 'offline', signal: 95, task: '已停机' },
+    { id: 'robot-003', name: '安防机器人-03', status: 'offline', signal: 0, task: '离线' },
 ];
 
 export function RealTimeMapModal({ isOpen, onClose }: RealTimeMapModalProps) {
@@ -75,22 +74,15 @@ export function RealTimeMapModal({ isOpen, onClose }: RealTimeMapModalProps) {
                                 <div className="flex justify-between items-start mb-2">
                                     <span className="font-medium text-gray-900">{robot.name}</span>
                                     <Badge variant={
-                                        robot.status === 'online' ? 'success' :
-                                            robot.status === 'charging' ? 'warning' : 'secondary'
+                                        robot.status === 'online' ? 'success' : 'secondary'
                                     }>
-                                        {robot.status === 'online' ? '运行中' :
-                                            robot.status === 'charging' ? '充电中' : '离线'}
+                                        {robot.status === 'online' ? '运行中' : '离线'}
                                     </Badge>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
-                                    <div className="flex items-center">
-                                        <Battery className={`w-3 h-3 mr-1 ${robot.battery > 20 ? 'text-green-500' : 'text-red-500'
-                                            }`} />
-                                        {robot.battery}%
-                                    </div>
+                                <div className="text-xs text-gray-500">
                                     <div className="flex items-center">
                                         <Wifi className="w-3 h-3 mr-1 text-blue-500" />
-                                        {robot.signal}%
+                                        信号强度: {robot.signal}%
                                     </div>
                                 </div>
                             </div>

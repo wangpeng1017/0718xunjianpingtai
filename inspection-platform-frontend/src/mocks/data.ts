@@ -22,7 +22,6 @@ export const mockDevices: Device[] = [
     lastUpdate: '2024-01-15T10:30:00Z',
     model: 'DJI Mavic 3',
     serialNumber: 'DJI001',
-    batteryLevel: 85,
   },
   {
     id: 'device-2',
@@ -43,7 +42,6 @@ export const mockDevices: Device[] = [
     lastUpdate: '2024-01-15T09:45:00Z',
     model: 'Boston Dynamics Spot',
     serialNumber: 'BD003',
-    batteryLevel: 45,
   },
   {
     id: 'device-4',
@@ -54,7 +52,6 @@ export const mockDevices: Device[] = [
     lastUpdate: '2024-01-15T08:15:00Z',
     model: 'DJI Phantom 4 RTK',
     serialNumber: 'DJI004',
-    batteryLevel: 0,
   },
   {
     id: 'device-5',
@@ -85,7 +82,6 @@ export const mockDevices: Device[] = [
     lastUpdate: '2024-01-15T10:40:00Z',
     model: 'ANYbotics ANYmal',
     serialNumber: 'ANY007',
-    batteryLevel: 92,
   },
   {
     id: 'device-8',
@@ -96,7 +92,6 @@ export const mockDevices: Device[] = [
     lastUpdate: '2024-01-15T10:28:00Z',
     model: 'DJI Matrice 300 RTK',
     serialNumber: 'DJI008',
-    batteryLevel: 78,
   },
   {
     id: 'device-9',
@@ -595,7 +590,6 @@ export const generateDeviceStatusHistory = (deviceId: string, hours: number = 24
     data.push({
       timestamp: time.toISOString(),
       deviceId,
-      batteryLevel: Math.max(20, Math.floor(Math.random() * 80) + 20),
       signalStrength: Math.floor(Math.random() * 30) + 70,
       temperature: Math.floor(Math.random() * 15) + 20,
       status: Math.random() > 0.1 ? 'online' : 'offline',
@@ -630,7 +624,6 @@ export const generateMockDevices = (count: number = 30): Device[] => {
       lastUpdate: new Date(Date.now() - Math.random() * 86400000).toISOString(),
       model: `Model-${type.toUpperCase()}-${i + 1}`,
       serialNumber: `SN${String(i + 1).padStart(6, '0')}`,
-      batteryLevel: type !== 'camera' ? Math.floor(Math.random() * 100) : undefined,
     });
   }
 

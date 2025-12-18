@@ -2,12 +2,15 @@ import React from 'react';
 import {
   Plus,
   Search,
+  Filter,
   Edit,
   Trash2,
   Eye,
-  Battery,
   Wifi,
-  Settings
+  Settings,
+  MoreHorizontal,
+  Monitor,
+  Play,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -50,7 +53,6 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
   const statusOptions = [
     { value: 'online', label: '在线' },
     { value: 'offline', label: '离线' },
-    { value: 'maintenance', label: '维护中' },
   ];
 
   const validateForm = () => {
@@ -342,7 +344,6 @@ function DeviceList() {
                 <TableHead>设备信息</TableHead>
                 <TableHead>类型</TableHead>
                 <TableHead>状态</TableHead>
-                <TableHead>电池</TableHead>
                 <TableHead>最后更新</TableHead>
                 <TableHead>操作</TableHead>
               </TableRow>
@@ -365,21 +366,6 @@ function DeviceList() {
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={device.status} />
-                  </TableCell>
-                  <TableCell>
-                    {device.batteryLevel !== undefined ? (
-                      <div className="flex items-center">
-                        <Battery className="h-4 w-4 mr-1" />
-                        <span className={`text-sm ${device.batteryLevel > 50 ? 'text-green-600' :
-                          device.batteryLevel > 20 ? 'text-yellow-600' :
-                            'text-red-600'
-                          }`}>
-                          {device.batteryLevel}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">-</span>
-                    )}
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-gray-600">

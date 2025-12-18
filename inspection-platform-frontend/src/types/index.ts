@@ -8,7 +8,6 @@ export interface Device {
   lastUpdate: string;
   model?: string;
   serialNumber?: string;
-  batteryLevel?: number;
 }
 
 // 设备模板类型
@@ -102,7 +101,6 @@ export interface MonitoringData {
   deviceId: string;
   timestamp: string;
   telemetry: {
-    batteryLevel?: number;
     signalStrength?: number;
     temperature?: number;
     humidity?: number;

@@ -27,6 +27,8 @@ interface ProtocolInterface {
   type: 'MQTT' | 'HTTP' | 'WebSocket' | 'TCP' | 'UDP' | 'RTSP' | 'ONVIF' | 'ROS' | 'LoRaWAN';
   version: string;
   description: string;
+  deviceId: string;
+  deviceName: string;
   endpoint: string;
   port: number;
   authentication: {
@@ -52,6 +54,8 @@ const mockProtocols: ProtocolInterface[] = [
     type: 'MQTT',
     version: '3.1.1',
     description: '用于设备消息传输的MQTT协议接口',
+    deviceId: 'device-1',
+    deviceName: '巡检无人机-01',
     endpoint: 'mqtt://broker.example.com',
     port: 1883,
     authentication: {
@@ -76,6 +80,8 @@ const mockProtocols: ProtocolInterface[] = [
     type: 'HTTP',
     version: '1.1',
     description: '基于HTTP的RESTful API接口',
+    deviceId: 'device-4',
+    deviceName: '环境传感器-04',
     endpoint: 'https://api.example.com',
     port: 443,
     authentication: {
@@ -100,6 +106,8 @@ const mockProtocols: ProtocolInterface[] = [
     type: 'RTSP',
     version: '2.0',
     description: '实时流传输协议，用于视频数据传输',
+    deviceId: 'device-1',
+    deviceName: '巡检无人机-01',
     endpoint: 'rtsp://camera.example.com',
     port: 554,
     authentication: {
@@ -124,6 +132,8 @@ const mockProtocols: ProtocolInterface[] = [
     type: 'ROS',
     version: '2.0',
     description: '机器人操作系统通信协议',
+    deviceId: 'device-2',
+    deviceName: '巡检机器人-02',
     endpoint: 'ros://master.example.com',
     port: 11311,
     authentication: {
@@ -161,6 +171,7 @@ function ProtocolForm({ protocol, onSubmit, onCancel }: ProtocolFormProps) {
     authType: protocol?.authentication?.type || 'none',
     credentials: protocol?.authentication?.credentials || '',
     status: protocol?.status || 'inactive',
+    deviceId: protocol?.deviceId || '',
     deviceTypes: protocol?.deviceTypes?.join(', ') || ''
   });
 
@@ -191,6 +202,14 @@ function ProtocolForm({ protocol, onSubmit, onCancel }: ProtocolFormProps) {
     { value: 'testing', label: '测试中' }
   ];
 
+  // Mock设备数据
+  const devices = [
+    { value: 'device-1', label: '巡检无人机-01' },
+    { value: 'device-2', label: '巡检机器人-02' },
+    { value: 'device-3', label: '安防机器人-03' },
+    { value: 'device-4', label: '环境传感器-04' }
+  ];
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -210,13 +229,15 @@ function ProtocolForm({ protocol, onSubmit, onCancel }: ProtocolFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
+    const selectedDevice = devices.find(d => d.value === formData.deviceId);
     const protocolData: Partial<ProtocolInterface> = {
       ...formData,
+      deviceName: selectedDevice?.label || '',
       authentication: {
         type: formData.authType as ProtocolInterface['authentication']['type'],
         credentials: formData.credentials || undefined
@@ -246,6 +267,15 @@ function ProtocolForm({ protocol, onSubmit, onCancel }: ProtocolFormProps) {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="请输入协议名称"
+          />
+        </FormField>
+
+        <FormField label="关联设备" required>
+          <Select
+            value={formData.deviceId}
+            onChange={(value) => setFormData({ ...formData, deviceId: value })}
+            options={devices}
+            placeholder="请选择关联设备"
           />
         </FormField>
 
@@ -293,7 +323,7 @@ function ProtocolForm({ protocol, onSubmit, onCancel }: ProtocolFormProps) {
         <FormField label="认证类型">
           <Select
             value={formData.authType}
-            onChange={(value) => setFormData({ ...formData, authType: value })}
+            onChange={(value) => setFormData({ ...formData, authType: value as ProtocolInterface['authentication']['type'] })}
             options={authTypes}
           />
         </FormField>
@@ -343,7 +373,7 @@ function ProtocolInterface() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  
+
   // 模态框状态
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -353,10 +383,10 @@ function ProtocolInterface() {
   // 筛选协议
   const filteredProtocols = protocols.filter(protocol => {
     const matchesSearch = protocol.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         protocol.description.toLowerCase().includes(searchTerm.toLowerCase());
+      protocol.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || protocol.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || protocol.status === statusFilter;
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -368,7 +398,7 @@ function ProtocolInterface() {
 
   const handleUpdateProtocol = (protocolData: Partial<ProtocolInterface>) => {
     if (selectedProtocol?.id) {
-      setProtocols(protocols.map(p => 
+      setProtocols(protocols.map(p =>
         p.id === selectedProtocol.id ? { ...p, ...protocolData } : p
       ));
       setShowEditModal(false);
@@ -386,16 +416,16 @@ function ProtocolInterface() {
 
   const handleTestProtocol = (protocol: ProtocolInterface) => {
     // 模拟测试协议连接
-    setProtocols(protocols.map(p => 
-      p.id === protocol.id 
+    setProtocols(protocols.map(p =>
+      p.id === protocol.id
         ? { ...p, status: 'testing', lastTested: new Date().toISOString() }
         : p
     ));
-    
+
     // 模拟测试完成
     setTimeout(() => {
-      setProtocols(prev => prev.map(p => 
-        p.id === protocol.id 
+      setProtocols(prev => prev.map(p =>
+        p.id === protocol.id
           ? { ...p, status: 'active' }
           : p
       ));
@@ -517,6 +547,7 @@ function ProtocolInterface() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>设备</TableHead>
                 <TableHead>协议名称</TableHead>
                 <TableHead>类型</TableHead>
                 <TableHead>端点</TableHead>
@@ -529,6 +560,9 @@ function ProtocolInterface() {
             <TableBody>
               {filteredProtocols.map((protocol) => (
                 <TableRow key={protocol.id}>
+                  <TableCell>
+                    <div className="font-medium text-sm">{protocol.deviceName}</div>
+                  </TableCell>
                   <TableCell>
                     <div>
                       <div className="font-medium">{protocol.name}</div>

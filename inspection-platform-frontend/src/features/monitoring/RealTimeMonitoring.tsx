@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Activity,
   Wifi,
-  Battery,
   Thermometer,
   Droplets,
   Wind,
@@ -35,27 +34,21 @@ const generateRealtimeData = (device: Device): MonitoringData => {
 
   const media: MonitoringData['media'] = isCamera002
     ? {
-        type: 'video',
-        url: 'http://10.130.9.179:8004/app/stream1.live.mp4',
-      }
+      type: 'video',
+      url: 'http://10.130.9.179:8004/app/stream1.live.mp4',
+    }
     : Math.random() > 0.7
       ? {
-          type: 'image',
-          url: `https://picsum.photos/400/300?random=${Date.now()}`,
-          thumbnail: `https://picsum.photos/100/75?random=${Date.now()}`,
-        }
+        type: 'image',
+        url: `https://picsum.photos/400/300?random=${Date.now()}`,
+        thumbnail: `https://picsum.photos/100/75?random=${Date.now()}`,
+      }
       : undefined;
 
   return {
     deviceId: device.id,
     timestamp: new Date().toISOString(),
-    location: {
-      lat: device.location.lat + (Math.random() - 0.5) * 0.001,
-      lng: device.location.lng + (Math.random() - 0.5) * 0.001,
-      altitude: Math.random() * 100,
-    },
     telemetry: {
-      batteryLevel: device.batteryLevel || Math.floor(Math.random() * 100),
       signalStrength: Math.floor(Math.random() * 100),
       temperature: Math.floor(Math.random() * 40) + 10,
       humidity: Math.floor(Math.random() * 80) + 20,
@@ -79,19 +72,11 @@ function MonitoringCard({ device, monitoringData, onViewDetails }: MonitoringCar
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'offline':
         return <AlertTriangle className="h-5 w-5 text-red-500" />;
-      case 'maintenance':
-        return <Clock className="h-5 w-5 text-yellow-500" />;
       default:
         return <AlertTriangle className="h-5 w-5 text-gray-500" />;
     }
   };
 
-  const getBatteryIcon = (level: number) => {
-    if (level > 75) return <Battery className="h-4 w-4 text-green-500" />;
-    if (level > 50) return <Battery className="h-4 w-4 text-yellow-500" />;
-    if (level > 25) return <Battery className="h-4 w-4 text-orange-500" />;
-    return <Battery className="h-4 w-4 text-red-500" />;
-  };
 
   const getSignalIcon = (strength: number) => {
     if (strength > 75) return <Wifi className="h-4 w-4 text-green-500" />;
@@ -118,14 +103,7 @@ function MonitoringCard({ device, monitoringData, onViewDetails }: MonitoringCar
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* 基本信息 */}
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center">
-              <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-              <span className="text-gray-600">
-                {device.location.lat.toFixed(4)}, {device.location.lng.toFixed(4)}
-              </span>
-            </div>
+          <div className="grid grid-cols-1 gap-4 text-sm">
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2 text-gray-400" />
               <span className="text-gray-600">
@@ -137,22 +115,13 @@ function MonitoringCard({ device, monitoringData, onViewDetails }: MonitoringCar
           {/* 实时遥测数据 */}
           {monitoringData && (
             <div className="space-y-3">
-              {/* 电池和信号 */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    {getBatteryIcon(monitoringData.telemetry.batteryLevel || 0)}
-                    <span className="text-gray-600 ml-2">电池</span>
-                  </div>
-                  <span className="font-medium">{monitoringData.telemetry.batteryLevel}%</span>
+              {/* 信号 */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  {getSignalIcon(monitoringData.telemetry.signalStrength || 0)}
+                  <span className="text-gray-600 ml-2">信号</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    {getSignalIcon(monitoringData.telemetry.signalStrength || 0)}
-                    <span className="text-gray-600 ml-2">信号</span>
-                  </div>
-                  <span className="font-medium">{monitoringData.telemetry.signalStrength}%</span>
-                </div>
+                <span className="font-medium">{monitoringData.telemetry.signalStrength}%</span>
               </div>
 
               {/* 环境数据 */}
@@ -234,7 +203,7 @@ function MonitoringCard({ device, monitoringData, onViewDetails }: MonitoringCar
           </div>
         </div>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
 
@@ -281,7 +250,7 @@ function RealTimeMonitoring() {
 
   const onlineDevices = devices.filter(d => d.status === 'online');
   const offlineDevices = devices.filter(d => d.status === 'offline');
-  const maintenanceDevices = devices.filter(d => d.status === 'maintenance');
+  // Removed maintenanceDevices as per instruction
   const selectedMonitoringData = selectedDevice ? monitoringData[selectedDevice.id] : undefined;
 
   return (
@@ -342,17 +311,6 @@ function RealTimeMonitoring() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">维护中</p>
-                <p className="text-2xl font-bold text-yellow-600">{maintenanceDevices.length}</p>
-              </div>
-              <Settings className="h-8 w-8 text-yellow-400" />
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* 在线设备监控 */}
@@ -406,35 +364,7 @@ function RealTimeMonitoring() {
         </Card>
       )}
 
-      {/* 维护中设备 */}
-      {maintenanceDevices.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>维护中设备 ({maintenanceDevices.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {maintenanceDevices.map(device => (
-                <div key={device.id} className="border rounded-lg p-4 bg-yellow-50">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{device.name}</h4>
-                      <p className="text-sm text-gray-500">{device.type}</p>
-                    </div>
-                    <StatusBadge status={device.status} />
-                  </div>
-                  <div className="mt-2 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <Settings className="h-3 w-3 mr-1" />
-                      维护中...
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Removed maintenanceDevices section as per instruction */}
 
       {/* 设备详情弹窗 */}
       {selectedDevice && (
@@ -478,22 +408,10 @@ function RealTimeMonitoring() {
                   <StatusBadge status={selectedDevice.status} />
                 </div>
               </div>
-              <div>
-                <div className="text-xs text-gray-500 mb-1">位置</div>
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                  {selectedDevice.location.lat.toFixed(4)}, {selectedDevice.location.lng.toFixed(4)}
-                </div>
-              </div>
               {selectedMonitoringData && (
                 <div className="space-y-2">
                   <div className="text-xs text-gray-500">实时遥测</div>
                   <div className="grid grid-cols-2 gap-2">
-                    {selectedMonitoringData.telemetry.batteryLevel !== undefined && (
-                      <div className="text-gray-700">
-                        电池 {selectedMonitoringData.telemetry.batteryLevel}%
-                      </div>
-                    )}
                     {selectedMonitoringData.telemetry.signalStrength !== undefined && (
                       <div className="text-gray-700">
                         信号 {selectedMonitoringData.telemetry.signalStrength}%

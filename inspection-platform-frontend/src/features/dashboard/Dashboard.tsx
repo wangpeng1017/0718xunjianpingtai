@@ -63,9 +63,8 @@ function Dashboard() {
     const total = devices.length;
     const online = devices.filter(d => d.status === 'online').length;
     const offline = devices.filter(d => d.status === 'offline').length;
-    const maintenance = devices.filter(d => d.status === 'maintenance').length;
 
-    return { total, online, offline, maintenance };
+    return { total, online, offline };
   }, [devices]);
 
   const taskStats = React.useMemo(() => {
@@ -90,7 +89,6 @@ function Dashboard() {
     return [
       { name: '在线', value: deviceStats.online, color: '#10b981' },
       { name: '离线', value: deviceStats.offline, color: '#ef4444' },
-      { name: '维护', value: deviceStats.maintenance, color: '#f59e0b' },
     ];
   }, [deviceStats]);
 

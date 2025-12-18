@@ -405,7 +405,7 @@ function DeviceCapabilities() {
   // 筛选能力
   const filteredCapabilities = capabilities.filter(capability => {
     const matchesSearch = capability.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         capability.description.toLowerCase().includes(searchTerm.toLowerCase());
+      capability.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || capability.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || capability.status === statusFilter;
 
@@ -449,14 +449,14 @@ function DeviceCapabilities() {
       setCapabilities(prev => prev.map(c =>
         c.id === capability.id
           ? {
-              ...c,
-              status: 'active',
-              testResults: {
-                ...c.testResults,
-                success: c.testResults.success + 1,
-                lastResult: 'success'
-              }
+            ...c,
+            status: 'active',
+            testResults: {
+              ...c.testResults,
+              success: c.testResults.success + 1,
+              lastResult: 'success'
             }
+          }
           : c
       ));
     }, 3000);
@@ -603,9 +603,9 @@ function DeviceCapabilities() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>设备</TableHead>
                 <TableHead>能力名称</TableHead>
                 <TableHead>类型</TableHead>
-                <TableHead>关联设备</TableHead>
                 <TableHead>状态</TableHead>
                 <TableHead>性能指标</TableHead>
                 <TableHead>测试结果</TableHead>
@@ -619,6 +619,9 @@ function DeviceCapabilities() {
                 return (
                   <TableRow key={capability.id}>
                     <TableCell>
+                      <div className="font-medium text-sm">{capability.deviceName}</div>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center space-x-3">
                         <TypeIcon className="h-5 w-5 text-gray-400" />
                         <div>
@@ -631,12 +634,6 @@ function DeviceCapabilities() {
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
                         {getTypeLabel(capability.type)}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <div>{capability.deviceName}</div>
-                        <div className="text-gray-500">{capability.dataTypes.slice(0, 2).join(', ')}</div>
-                      </div>
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={capability.status} />

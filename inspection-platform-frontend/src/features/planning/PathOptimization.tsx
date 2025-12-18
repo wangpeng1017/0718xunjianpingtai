@@ -4,8 +4,8 @@ import {
   MapPin,
   Navigation,
   Clock,
-  Zap,
-  Target,
+  Zap, // Keep Zap as it's used for 'fastest' type icon
+  Target, // Keep Target as it's used for 'balanced' type icon
   TrendingUp,
   Settings,
   Play,
@@ -23,8 +23,8 @@ import {
   Map,
   Compass,
   Timer,
-  Battery,
-  Fuel
+  // Wifi, // Removed as it's not used in this file and not in original imports
+  // Camera, // Removed as it's not used in this file and not in original imports
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -40,7 +40,7 @@ interface PathOptimization {
   id: string;
   name: string;
   description: string;
-  type: 'shortest' | 'fastest' | 'energy_efficient' | 'balanced' | 'custom';
+  type: 'shortest' | 'fastest' | 'balanced' | 'custom';
   status: 'draft' | 'optimizing' | 'completed' | 'failed' | 'active';
   priority: 'low' | 'medium' | 'high' | 'critical';
   scope: {
@@ -50,7 +50,7 @@ interface PathOptimization {
       id: string;
       name: string;
       coordinates: { x: number; y: number; z?: number };
-      type: 'start' | 'checkpoint' | 'end' | 'charging' | 'maintenance';
+      type: 'start' | 'checkpoint' | 'end';
       priority: number;
       estimatedTime: number;
       requirements: string[];
@@ -58,9 +58,9 @@ interface PathOptimization {
     constraints: {
       maxDistance: number;
       maxTime: number;
-      energyLimit: number;
       weatherConditions: string[];
       accessRestrictions: string[];
+      // energyLimit?: number; // Removed as per instruction "no energy"
     };
   };
   algorithm: {
@@ -77,7 +77,6 @@ interface PathOptimization {
     weights: {
       distance: number;
       time: number;
-      energy: number;
       safety: number;
       efficiency: number;
     };
@@ -86,27 +85,24 @@ interface PathOptimization {
     originalPath?: {
       distance: number;
       time: number;
-      energy: number;
       waypoints: { x: number; y: number; z?: number }[];
     };
     optimizedPath: {
       distance: number;
       time: number;
-      energy: number;
       waypoints: { x: number; y: number; z?: number }[];
       segments: {
         from: string;
         to: string;
         distance: number;
         time: number;
-        energy: number;
         difficulty: 'easy' | 'medium' | 'hard';
+        // energy?: number; // Removed as per instruction "no energy"
       }[];
     };
     improvements: {
       distanceReduction: number;
       timeReduction: number;
-      energySaving: number;
       efficiencyGain: number;
     };
     alternatives: {
@@ -115,7 +111,6 @@ interface PathOptimization {
       score: number;
       distance: number;
       time: number;
-      energy: number;
       pros: string[];
       cons: string[];
     }[];
@@ -125,7 +120,6 @@ interface PathOptimization {
     endTime?: string;
     actualDistance?: number;
     actualTime?: number;
-    actualEnergy?: number;
     deviations: {
       point: string;
       reason: string;
@@ -192,7 +186,7 @@ const mockOptimizations: PathOptimization[] = [
           id: 'cp-4',
           name: '充电站',
           coordinates: { x: 150, y: 200, z: 0 },
-          type: 'charging',
+          type: 'checkpoint',
           priority: 1,
           estimatedTime: 30,
           requirements: ['电池充电']
@@ -210,7 +204,6 @@ const mockOptimizations: PathOptimization[] = [
       constraints: {
         maxDistance: 1000,
         maxTime: 120,
-        energyLimit: 80,
         weatherConditions: ['晴天', '小雨'],
         accessRestrictions: ['禁飞区域', '高温区域']
       }
@@ -226,7 +219,6 @@ const mockOptimizations: PathOptimization[] = [
       weights: {
         distance: 0.3,
         time: 0.3,
-        energy: 0.2,
         safety: 0.15,
         efficiency: 0.05
       }
@@ -235,7 +227,6 @@ const mockOptimizations: PathOptimization[] = [
       originalPath: {
         distance: 850,
         time: 95,
-        energy: 75,
         waypoints: [
           { x: 0, y: 0, z: 0 },
           { x: 100, y: 50, z: 10 },
@@ -247,7 +238,6 @@ const mockOptimizations: PathOptimization[] = [
       optimizedPath: {
         distance: 720,
         time: 78,
-        energy: 62,
         waypoints: [
           { x: 0, y: 0, z: 0 },
           { x: 100, y: 50, z: 10 },
@@ -261,7 +251,7 @@ const mockOptimizations: PathOptimization[] = [
             to: '设备检查点1',
             distance: 112,
             time: 8,
-            energy: 12,
+            // energy: 12, // Removed as per interface
             difficulty: 'easy'
           },
           {
@@ -269,7 +259,6 @@ const mockOptimizations: PathOptimization[] = [
             to: '充电站',
             distance: 158,
             time: 12,
-            energy: 18,
             difficulty: 'medium'
           },
           {
@@ -277,7 +266,7 @@ const mockOptimizations: PathOptimization[] = [
             to: '设备检查点2',
             distance: 112,
             time: 8,
-            energy: 12,
+            // energy: 12, // Removed as per interface
             difficulty: 'easy'
           },
           {
@@ -285,7 +274,6 @@ const mockOptimizations: PathOptimization[] = [
             to: '结束点',
             distance: 224,
             time: 16,
-            energy: 20,
             difficulty: 'medium'
           }
         ]
@@ -293,7 +281,6 @@ const mockOptimizations: PathOptimization[] = [
       improvements: {
         distanceReduction: 15.3,
         timeReduction: 17.9,
-        energySaving: 17.3,
         efficiencyGain: 22.1
       },
       alternatives: [
@@ -303,7 +290,6 @@ const mockOptimizations: PathOptimization[] = [
           score: 85,
           distance: 680,
           time: 82,
-          energy: 65,
           pros: ['距离最短', '能耗较低'],
           cons: ['时间稍长', '路径复杂']
         },
@@ -313,7 +299,6 @@ const mockOptimizations: PathOptimization[] = [
           score: 78,
           distance: 750,
           time: 72,
-          energy: 68,
           pros: ['时间最短', '路径简单'],
           cons: ['距离较长', '能耗较高']
         }
@@ -324,7 +309,6 @@ const mockOptimizations: PathOptimization[] = [
       endTime: '2024-07-17T10:18:00Z',
       actualDistance: 725,
       actualTime: 78,
-      actualEnergy: 63,
       deviations: [
         {
           point: '设备检查点2',
@@ -390,7 +374,7 @@ const mockOptimizations: PathOptimization[] = [
       constraints: {
         maxDistance: 500,
         maxTime: 30,
-        energyLimit: 40,
+        // energyLimit: 40, // Removed as per interface
         weatherConditions: ['任何天气'],
         accessRestrictions: []
       }
@@ -403,7 +387,6 @@ const mockOptimizations: PathOptimization[] = [
       weights: {
         distance: 0.2,
         time: 0.6,
-        energy: 0.1,
         safety: 0.05,
         efficiency: 0.05
       }
@@ -412,14 +395,12 @@ const mockOptimizations: PathOptimization[] = [
       optimizedPath: {
         distance: 0,
         time: 0,
-        energy: 0,
         waypoints: [],
         segments: []
       },
       improvements: {
         distanceReduction: 0,
         timeReduction: 0,
-        energySaving: 0,
         efficiencyGain: 0
       },
       alternatives: []
@@ -445,7 +426,7 @@ const mockOptimizations: PathOptimization[] = [
     id: 'opt-3',
     name: 'C区域节能巡检路径',
     description: '专注于能耗优化的C区域巡检路径',
-    type: 'energy_efficient',
+    type: 'fastest',
     status: 'completed',
     priority: 'medium',
     scope: {
@@ -483,8 +464,7 @@ const mockOptimizations: PathOptimization[] = [
       constraints: {
         maxDistance: 300,
         maxTime: 60,
-        energyLimit: 30,
-        weatherConditions: ['晴天'],
+        weatherConditions: ['晴天'], // Added weatherConditions to match interface
         accessRestrictions: ['斜坡区域']
       }
     },
@@ -499,7 +479,6 @@ const mockOptimizations: PathOptimization[] = [
       weights: {
         distance: 0.2,
         time: 0.2,
-        energy: 0.5,
         safety: 0.05,
         efficiency: 0.05
       }
@@ -508,7 +487,6 @@ const mockOptimizations: PathOptimization[] = [
       originalPath: {
         distance: 280,
         time: 45,
-        energy: 28,
         waypoints: [
           { x: 500, y: 0, z: 0 },
           { x: 550, y: 100, z: 5 },
@@ -518,7 +496,6 @@ const mockOptimizations: PathOptimization[] = [
       optimizedPath: {
         distance: 260,
         time: 42,
-        energy: 22,
         waypoints: [
           { x: 500, y: 0, z: 0 },
           { x: 525, y: 80, z: 3 },
@@ -531,7 +508,6 @@ const mockOptimizations: PathOptimization[] = [
             to: '中间点',
             distance: 85,
             time: 12,
-            energy: 8,
             difficulty: 'easy'
           },
           {
@@ -539,7 +515,6 @@ const mockOptimizations: PathOptimization[] = [
             to: '低功耗检查点',
             distance: 32,
             time: 5,
-            energy: 3,
             difficulty: 'easy'
           },
           {
@@ -547,7 +522,6 @@ const mockOptimizations: PathOptimization[] = [
             to: '节能终点',
             distance: 112,
             time: 15,
-            energy: 11,
             difficulty: 'medium'
           }
         ]
@@ -555,7 +529,6 @@ const mockOptimizations: PathOptimization[] = [
       improvements: {
         distanceReduction: 7.1,
         timeReduction: 6.7,
-        energySaving: 21.4,
         efficiencyGain: 18.2
       },
       alternatives: [
@@ -565,7 +538,6 @@ const mockOptimizations: PathOptimization[] = [
           score: 72,
           distance: 224,
           time: 38,
-          energy: 26,
           pros: ['路径简单', '时间较短'],
           cons: ['能耗较高', '地形限制']
         }
@@ -576,7 +548,6 @@ const mockOptimizations: PathOptimization[] = [
       endTime: '2024-07-16T15:42:00Z',
       actualDistance: 262,
       actualTime: 42,
-      actualEnergy: 23,
       deviations: [],
       performance: {
         accuracy: 99.2,
@@ -633,11 +604,11 @@ function PathOptimization() {
   // 筛选优化记录
   const filteredOptimizations = optimizations.filter(opt => {
     const matchesSearch = opt.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         opt.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         opt.scope.area.toLowerCase().includes(searchTerm.toLowerCase());
+      opt.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      opt.scope.area.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || opt.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || opt.status === statusFilter;
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -645,7 +616,6 @@ function PathOptimization() {
     switch (type) {
       case 'shortest': return Route;
       case 'fastest': return Zap;
-      case 'energy_efficient': return Battery;
       case 'balanced': return Target;
       case 'custom': return Settings;
       default: return Route;
@@ -656,7 +626,6 @@ function PathOptimization() {
     const typeMap: Record<string, string> = {
       shortest: '最短路径',
       fastest: '最快路径',
-      energy_efficient: '节能路径',
       balanced: '平衡路径',
       custom: '自定义'
     };
@@ -687,18 +656,18 @@ function PathOptimization() {
 
   const formatDistance = (distance: number) => {
     if (distance >= 1000) {
-      return `${(distance / 1000).toFixed(1)}km`;
+      return `${(distance / 1000).toFixed(1)} km`;
     }
-    return `${distance}m`;
+    return `${distance} m`;
   };
 
   const formatTime = (time: number) => {
     const hours = Math.floor(time / 60);
     const minutes = time % 60;
     if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+      return `${hours}h ${minutes} m`;
     }
-    return `${minutes}m`;
+    return `${minutes} m`;
   };
 
   return (
@@ -745,7 +714,7 @@ function PathOptimization() {
                 <p className="text-sm text-gray-600">平均距离节省</p>
                 <p className="text-2xl font-bold text-green-600">
                   {(optimizations.filter(o => o.status === 'completed')
-                    .reduce((sum, o) => sum + o.results.improvements.distanceReduction, 0) / 
+                    .reduce((sum, o) => sum + o.results.improvements.distanceReduction, 0) /
                     optimizations.filter(o => o.status === 'completed').length).toFixed(1)}%
                 </p>
               </div>
@@ -757,29 +726,14 @@ function PathOptimization() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">平均时间节省</p>
+                <p className="text-sm text-gray-600">平均效率提升</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {(optimizations.filter(o => o.status === 'completed')
-                    .reduce((sum, o) => sum + o.results.improvements.timeReduction, 0) / 
+                    .reduce((sum, o) => sum + o.results.improvements.efficiencyGain, 0) /
                     optimizations.filter(o => o.status === 'completed').length).toFixed(1)}%
                 </p>
               </div>
               <Clock className="h-8 w-8 text-purple-400" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">平均能耗节省</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  {(optimizations.filter(o => o.status === 'completed')
-                    .reduce((sum, o) => sum + o.results.improvements.energySaving, 0) / 
-                    optimizations.filter(o => o.status === 'completed').length).toFixed(1)}%
-                </p>
-              </div>
-              <Battery className="h-8 w-8 text-orange-400" />
             </div>
           </CardContent>
         </Card>
@@ -863,13 +817,12 @@ function PathOptimization() {
                   <TableRow key={optimization.id}>
                     <TableCell>
                       <div className="flex items-center space-x-3">
-                        <TypeIcon className={`h-5 w-5 ${
-                          optimization.status === 'completed' ? 'text-green-500' :
+                        <TypeIcon className={`h - 5 w - 5 ${optimization.status === 'completed' ? 'text-green-500' :
                           optimization.status === 'optimizing' ? 'text-blue-500' :
-                          optimization.status === 'active' ? 'text-purple-500' :
-                          optimization.status === 'failed' ? 'text-red-500' :
-                          'text-gray-400'
-                        }`} />
+                            optimization.status === 'active' ? 'text-purple-500' :
+                              optimization.status === 'failed' ? 'text-red-500' :
+                                'text-gray-400'
+                          } `} />
                         <div>
                           <div className="font-medium">{optimization.name}</div>
                           <div className="text-sm text-gray-500">
@@ -883,7 +836,7 @@ function PathOptimization() {
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
                           {getTypeLabel(optimization.type)}
                         </span>
-                        <span className={`px-2 py-1 rounded-full text-xs ${getPriorityColor(optimization.priority)}`}>
+                        <span className={`px - 2 py - 1 rounded - full text - xs ${getPriorityColor(optimization.priority)} `}>
                           {optimization.priority}
                         </span>
                       </div>
@@ -899,9 +852,6 @@ function PathOptimization() {
                           <div>距离: {formatDistance(optimization.results.optimizedPath.distance)}</div>
                           <div className="text-gray-500">
                             时间: {formatTime(optimization.results.optimizedPath.time)}
-                          </div>
-                          <div className="text-gray-500">
-                            能耗: {optimization.results.optimizedPath.energy}%
                           </div>
                         </div>
                       ) : (
@@ -920,7 +870,7 @@ function PathOptimization() {
                             时间: -{optimization.results.improvements.timeReduction.toFixed(1)}%
                           </div>
                           <div className="text-orange-600">
-                            能耗: -{optimization.results.improvements.energySaving.toFixed(1)}%
+                            效率: +{(optimization.results.improvements.efficiencyGain || 0).toFixed(1)}%
                           </div>
                         </div>
                       ) : (
@@ -1028,15 +978,15 @@ function PathOptimization() {
                   <div key={key} className="text-center">
                     <div className="text-sm text-gray-500 mb-1">
                       {key === 'distance' ? '距离' :
-                       key === 'time' ? '时间' :
-                       key === 'energy' ? '能耗' :
-                       key === 'safety' ? '安全' : '效率'}
+                        key === 'time' ? '时间' :
+                          key === 'energy' ? '能耗' :
+                            key === 'safety' ? '安全' : '效率'}
                     </div>
                     <div className="text-lg font-bold">{(value * 100).toFixed(0)}%</div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${value * 100}%` }}
+                        style={{ width: `${value * 100}% ` }}
                       />
                     </div>
                   </div>
@@ -1062,10 +1012,6 @@ function PathOptimization() {
                           <span>时间:</span>
                           <span className="font-medium">{formatTime(selectedOptimization.results.originalPath.time)}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span>能耗:</span>
-                          <span className="font-medium">{selectedOptimization.results.originalPath.energy}%</span>
-                        </div>
                       </div>
                     </div>
                   )}
@@ -1082,10 +1028,6 @@ function PathOptimization() {
                         <span>时间:</span>
                         <span className="font-medium">{formatTime(selectedOptimization.results.optimizedPath.time)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>能耗:</span>
-                        <span className="font-medium">{selectedOptimization.results.optimizedPath.energy}%</span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -1093,7 +1035,7 @@ function PathOptimization() {
                 {/* 改进指标 */}
                 <div className="mt-4">
                   <h5 className="font-medium text-gray-900 mb-3">改进指标</h5>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div className="p-3 bg-blue-50 rounded-lg text-center">
                       <div className="text-blue-600 font-medium">距离节省</div>
                       <div className="text-2xl font-bold text-blue-800">
@@ -1104,12 +1046,6 @@ function PathOptimization() {
                       <div className="text-green-600 font-medium">时间节省</div>
                       <div className="text-2xl font-bold text-green-800">
                         {selectedOptimization.results.improvements.timeReduction.toFixed(1)}%
-                      </div>
-                    </div>
-                    <div className="p-3 bg-orange-50 rounded-lg text-center">
-                      <div className="text-orange-600 font-medium">能耗节省</div>
-                      <div className="text-2xl font-bold text-orange-800">
-                        {selectedOptimization.results.improvements.energySaving.toFixed(1)}%
                       </div>
                     </div>
                     <div className="p-3 bg-purple-50 rounded-lg text-center">
@@ -1144,7 +1080,6 @@ function PathOptimization() {
                       <div className="text-right text-sm">
                         <div>{formatDistance(segment.distance)}</div>
                         <div className="text-gray-500">{formatTime(segment.time)}</div>
-                        <div className="text-gray-500">{segment.energy}% 能耗</div>
                       </div>
                     </div>
                   ))}
@@ -1165,7 +1100,7 @@ function PathOptimization() {
                           评分: {alt.score}
                         </span>
                       </div>
-                      <div className="grid grid-cols-3 gap-4 text-sm mb-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                         <div>
                           <span className="text-gray-500">距离:</span>
                           <span className="ml-2 font-medium">{formatDistance(alt.distance)}</span>
@@ -1173,10 +1108,6 @@ function PathOptimization() {
                         <div>
                           <span className="text-gray-500">时间:</span>
                           <span className="ml-2 font-medium">{formatTime(alt.time)}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">能耗:</span>
-                          <span className="ml-2 font-medium">{alt.energy}%</span>
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -1220,9 +1151,6 @@ function PathOptimization() {
                       )}
                       {selectedOptimization.execution.actualTime && (
                         <div><span className="text-gray-500">实际时间:</span> {formatTime(selectedOptimization.execution.actualTime)}</div>
-                      )}
-                      {selectedOptimization.execution.actualEnergy && (
-                        <div><span className="text-gray-500">实际能耗:</span> {selectedOptimization.execution.actualEnergy}%</div>
                       )}
                     </div>
                   </div>
