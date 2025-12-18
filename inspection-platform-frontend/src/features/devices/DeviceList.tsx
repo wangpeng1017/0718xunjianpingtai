@@ -5,7 +5,6 @@ import {
   Edit,
   Trash2,
   Eye,
-  MapPin,
   Battery,
   Wifi,
   Settings
@@ -36,11 +35,6 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
     type: device?.type || '',
     model: device?.model || '',
     serialNumber: device?.serialNumber || '',
-    status: device?.status || 'offline',
-    location: {
-      lat: device?.location?.lat || 0,
-      lng: device?.location?.lng || 0,
-    },
     capabilities: device?.capabilities?.join(', ') || '',
   });
 
@@ -85,6 +79,7 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
 
     const deviceData: Partial<Device> = {
       ...formData,
+      type: formData.type as Device['type'],
       capabilities: formData.capabilities.split(',').map(c => c.trim()).filter(Boolean),
       lastUpdate: new Date().toISOString(),
     };
@@ -134,38 +129,7 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
           />
         </FormField>
 
-        <FormField label="设备状态" error={errors.status}>
-          <Select
-            value={formData.status}
-            onChange={(value) => setFormData({ ...formData, status: value as Device['status'] })}
-            options={statusOptions}
-          />
-        </FormField>
 
-        <FormField label="位置坐标">
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              type="number"
-              step="any"
-              value={formData.location.lat}
-              onChange={(e) => setFormData({
-                ...formData,
-                location: { ...formData.location, lat: parseFloat(e.target.value) || 0 }
-              })}
-              placeholder="纬度"
-            />
-            <Input
-              type="number"
-              step="any"
-              value={formData.location.lng}
-              onChange={(e) => setFormData({
-                ...formData,
-                location: { ...formData.location, lng: parseFloat(e.target.value) || 0 }
-              })}
-              placeholder="经度"
-            />
-          </div>
-        </FormField>
       </div>
 
       <FormField label="设备能力" className="col-span-2">
@@ -213,12 +177,12 @@ function DeviceList() {
   const filteredDevices = React.useMemo(() => {
     return devices.filter(device => {
       const matchesSearch = device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           device.model?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           device.serialNumber?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        device.model?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        device.serialNumber?.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesStatus = statusFilter === 'all' || device.status === statusFilter;
       const matchesType = typeFilter === 'all' || device.type === typeFilter;
-      
+
       return matchesSearch && matchesStatus && matchesType;
     });
   }, [devices, searchTerm, statusFilter, typeFilter]);
@@ -235,7 +199,6 @@ function DeviceList() {
   const statusMap = {
     online: '在线',
     offline: '离线',
-    maintenance: '维护中',
   };
 
   // 事件处理函数
@@ -328,19 +291,6 @@ function DeviceList() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">维护中</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {devices.filter(d => d.status === 'maintenance').length}
-                </p>
-              </div>
-              <Settings className="h-8 w-8 text-yellow-400" />
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* 搜索和过滤 */}
@@ -364,7 +314,6 @@ function DeviceList() {
               <option value="all">所有状态</option>
               <option value="online">在线</option>
               <option value="offline">离线</option>
-              <option value="maintenance">维护中</option>
             </select>
             <select
               value={typeFilter}
@@ -393,7 +342,6 @@ function DeviceList() {
                 <TableHead>设备信息</TableHead>
                 <TableHead>类型</TableHead>
                 <TableHead>状态</TableHead>
-                <TableHead>位置</TableHead>
                 <TableHead>电池</TableHead>
                 <TableHead>最后更新</TableHead>
                 <TableHead>操作</TableHead>
@@ -419,20 +367,13 @@ function DeviceList() {
                     <StatusBadge status={device.status} />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {device.location.lat.toFixed(4)}, {device.location.lng.toFixed(4)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
                     {device.batteryLevel !== undefined ? (
                       <div className="flex items-center">
                         <Battery className="h-4 w-4 mr-1" />
-                        <span className={`text-sm ${
-                          device.batteryLevel > 50 ? 'text-green-600' :
+                        <span className={`text-sm ${device.batteryLevel > 50 ? 'text-green-600' :
                           device.batteryLevel > 20 ? 'text-yellow-600' :
-                          'text-red-600'
-                        }`}>
+                            'text-red-600'
+                          }`}>
                           {device.batteryLevel}%
                         </span>
                       </div>

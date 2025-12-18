@@ -16,8 +16,6 @@ import {
     Pause,
     RefreshCw,
     Power,
-    MapPin,
-    Navigation,
     Video,
     MoreHorizontal,
     ArrowLeft,
@@ -28,9 +26,9 @@ import { Badge } from '../../components/ui/Badge';
 
 // 模拟机器人数据
 const mockRobots = [
-    { id: 'robot-001', name: '巡检机器人-01', status: 'online', battery: 85, signal: 92, location: 'A区-仓库通道', task: '日常巡检' },
-    { id: 'robot-002', name: '巡检机器人-02', status: 'charging', battery: 100, signal: 95, location: '充电站B', task: '待机中' },
-    { id: 'robot-003', name: '安防机器人-03', status: 'offline', battery: 0, signal: 0, location: '未知', task: '离线' },
+    { id: 'robot-001', name: '巡检机器人-01', status: 'online', battery: 85, signal: 92, task: '日常巡检' },
+    { id: 'robot-002', name: '巡检机器人-02', status: 'charging', battery: 100, signal: 95, task: '待机中' },
+    { id: 'robot-003', name: '安防机器人-03', status: 'offline', battery: 0, signal: 0, task: '离线' },
 ];
 
 export default function RealTimeMapPage() {
@@ -90,7 +88,7 @@ export default function RealTimeMapPage() {
                 <div className="col-span-3 flex flex-col bg-blue-950/20 border border-blue-500/30 rounded-xl backdrop-blur-sm overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                     <div className="p-4 border-b border-blue-500/30 bg-blue-900/20">
                         <h3 className="font-semibold text-blue-100 flex items-center">
-                            <Navigation className="w-5 h-5 mr-2 text-cyan-400" />
+                            <Video className="w-5 h-5 mr-2 text-cyan-400" />
                             设备列表
                         </h3>
                     </div>
@@ -100,8 +98,8 @@ export default function RealTimeMapPage() {
                                 key={robot.id}
                                 onClick={() => setSelectedRobot(robot)}
                                 className={`p-4 rounded-lg cursor-pointer transition-all border group ${selectedRobot.id === robot.id
-                                        ? 'bg-blue-600/20 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
-                                        : 'bg-blue-900/10 border-transparent hover:bg-blue-800/30 hover:border-blue-500/30'
+                                    ? 'bg-blue-600/20 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                                    : 'bg-blue-900/10 border-transparent hover:bg-blue-800/30 hover:border-blue-500/30'
                                     }`}
                             >
                                 <div className="flex justify-between items-start mb-3">
@@ -109,8 +107,8 @@ export default function RealTimeMapPage() {
                                         {robot.name}
                                     </span>
                                     <span className={`text-xs px-2 py-0.5 rounded-full border ${robot.status === 'online' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
-                                            robot.status === 'charging' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-                                                'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                                        robot.status === 'charging' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                                            'bg-gray-500/20 text-gray-400 border-gray-500/30'
                                         }`}>
                                         {robot.status === 'online' ? '运行中' :
                                             robot.status === 'charging' ? '充电中' : '离线'}
@@ -125,10 +123,6 @@ export default function RealTimeMapPage() {
                                     <div className="flex items-center">
                                         <Wifi className="w-3 h-3 mr-1.5 text-cyan-400" />
                                         {robot.signal}%
-                                    </div>
-                                    <div className="col-span-2 flex items-center truncate">
-                                        <MapPin className="w-3 h-3 mr-1.5 text-blue-400" />
-                                        {robot.location}
                                     </div>
                                 </div>
                             </div>
@@ -209,7 +203,7 @@ export default function RealTimeMapPage() {
                                 <Power className="w-4 h-4 mr-2" /> 紧急停止
                             </Button>
                             <Button variant="default" size="sm" className="bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/50 text-cyan-200">
-                                <Navigation className="w-4 h-4 mr-2" /> 自动返航
+                                <Play className="w-4 h-4 mr-2" /> 自动返航
                             </Button>
                         </div>
                     </div>

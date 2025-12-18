@@ -18,7 +18,6 @@ export const mockDevices: Device[] = [
     name: '无人机-001',
     type: 'drone',
     status: 'online',
-    location: { lat: 39.9042, lng: 116.4074 },
     capabilities: ['video_capture', 'thermal_imaging', 'gps_tracking'],
     lastUpdate: '2024-01-15T10:30:00Z',
     model: 'DJI Mavic 3',
@@ -30,7 +29,6 @@ export const mockDevices: Device[] = [
     name: '摄像头-002',
     type: 'camera',
     status: 'online',
-    location: { lat: 39.9142, lng: 116.4174 },
     capabilities: ['video_capture', 'motion_detection'],
     lastUpdate: '2024-01-15T10:25:00Z',
     model: 'Hikvision DS-2CD2T47G1',
@@ -40,8 +38,7 @@ export const mockDevices: Device[] = [
     id: 'device-3',
     name: '巡检机器人-003',
     type: 'robot',
-    status: 'maintenance',
-    location: { lat: 39.8942, lng: 116.3974 },
+    status: 'offline',
     capabilities: ['autonomous_navigation', 'obstacle_detection', 'data_collection'],
     lastUpdate: '2024-01-15T09:45:00Z',
     model: 'Boston Dynamics Spot',
@@ -53,7 +50,6 @@ export const mockDevices: Device[] = [
     name: '无人机-004',
     type: 'drone',
     status: 'offline',
-    location: { lat: 39.9242, lng: 116.4274 },
     capabilities: ['video_capture', 'lidar_scanning', 'gps_tracking'],
     lastUpdate: '2024-01-15T08:15:00Z',
     model: 'DJI Phantom 4 RTK',
@@ -65,7 +61,6 @@ export const mockDevices: Device[] = [
     name: '传感器-005',
     type: 'sensor',
     status: 'online',
-    location: { lat: 39.9342, lng: 116.4374 },
     capabilities: ['temperature_monitoring', 'humidity_monitoring', 'air_quality'],
     lastUpdate: '2024-01-15T10:35:00Z',
     model: 'Bosch BME680',
@@ -75,8 +70,7 @@ export const mockDevices: Device[] = [
     id: 'device-6',
     name: '摄像头-006',
     type: 'camera',
-    status: 'maintenance',
-    location: { lat: 39.8842, lng: 116.3874 },
+    status: 'offline',
     capabilities: ['video_capture', 'night_vision', 'motion_detection'],
     lastUpdate: '2024-01-15T07:20:00Z',
     model: 'Dahua IPC-HFW5831E',
@@ -87,7 +81,6 @@ export const mockDevices: Device[] = [
     name: '巡检机器人-007',
     type: 'robot',
     status: 'online',
-    location: { lat: 39.9442, lng: 116.4474 },
     capabilities: ['autonomous_navigation', 'thermal_imaging', 'gas_detection'],
     lastUpdate: '2024-01-15T10:40:00Z',
     model: 'ANYbotics ANYmal',
@@ -99,7 +92,6 @@ export const mockDevices: Device[] = [
     name: '无人机-008',
     type: 'drone',
     status: 'online',
-    location: { lat: 39.8742, lng: 116.3774 },
     capabilities: ['video_capture', 'multispectral_imaging', 'gps_tracking'],
     lastUpdate: '2024-01-15T10:28:00Z',
     model: 'DJI Matrice 300 RTK',
@@ -111,7 +103,6 @@ export const mockDevices: Device[] = [
     name: '测温云台',
     type: 'camera',
     status: 'online',
-    location: { lat: 39.9042, lng: 116.4074 },
     capabilities: ['video_capture', 'thermal_imaging', 'ptz_control'],
     lastUpdate: '2024-01-15T10:50:00Z',
     model: '测温云台 V1',
@@ -122,7 +113,6 @@ export const mockDevices: Device[] = [
     name: '可见光云台',
     type: 'camera',
     status: 'online',
-    location: { lat: 39.9062, lng: 116.4094 },
     capabilities: ['video_capture', 'ptz_control'],
     lastUpdate: '2024-01-15T10:52:00Z',
     model: '可见光云台 V1',
@@ -133,7 +123,6 @@ export const mockDevices: Device[] = [
     name: '漏油检测云台',
     type: 'camera',
     status: 'online',
-    location: { lat: 39.9082, lng: 116.4114 },
     capabilities: ['video_capture', 'infrared_imaging', 'oil_leak_detection', 'ptz_control'],
     lastUpdate: '2024-01-15T10:54:00Z',
     model: '漏油检测云台 V1',
@@ -144,7 +133,6 @@ export const mockDevices: Device[] = [
     name: '在线式声像仪',
     type: 'sensor',
     status: 'online',
-    location: { lat: 39.9102, lng: 116.4134 },
     capabilities: ['acoustic_imaging', 'temperature_monitoring'],
     lastUpdate: '2024-01-15T10:56:00Z',
     model: '在线声像仪 V1',
@@ -155,7 +143,6 @@ export const mockDevices: Device[] = [
     name: '双镜头云台+声像仪一体云台',
     type: 'camera',
     status: 'online',
-    location: { lat: 39.9122, lng: 116.4154 },
     capabilities: ['video_capture', 'thermal_imaging', 'acoustic_imaging', 'ptz_control'],
     lastUpdate: '2024-01-15T10:58:00Z',
     model: '双镜头声像一体云台 V1',
@@ -166,7 +153,6 @@ export const mockDevices: Device[] = [
     name: 'TDLAS检测云台',
     type: 'sensor',
     status: 'online',
-    location: { lat: 39.9142, lng: 116.4174 },
     capabilities: ['gas_detection', 'tdlas_detection', 'ptz_control'],
     lastUpdate: '2024-01-15T11:00:00Z',
     model: 'TDLAS 云台 V1',
@@ -177,7 +163,6 @@ export const mockDevices: Device[] = [
     name: '边缘分析主机',
     type: 'sensor',
     status: 'online',
-    location: { lat: 39.9162, lng: 116.4194 },
     capabilities: ['edge_computing', 'ai_inference', 'data_aggregation'],
     lastUpdate: '2024-01-15T11:02:00Z',
     model: '边缘分析主机 V1',
@@ -568,8 +553,7 @@ export const mockStatistics: Statistics = {
   devices: {
     total: 24,
     online: 18,
-    offline: 3,
-    maintenance: 3,
+    offline: 6,
   },
   efficiency: {
     averageTaskDuration: 45.5, // 分钟
@@ -582,11 +566,11 @@ export const mockStatistics: Statistics = {
 export const generateTimeSeriesData = (days: number = 30) => {
   const data = [];
   const now = new Date();
-  
+
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    
+
     data.push({
       date: date.toISOString().split('T')[0],
       tasks: Math.floor(Math.random() * 20) + 5,
@@ -595,7 +579,7 @@ export const generateTimeSeriesData = (days: number = 30) => {
       efficiency: Math.floor(Math.random() * 20) + 80,
     });
   }
-  
+
   return data;
 };
 
@@ -624,7 +608,7 @@ export const generateDeviceStatusHistory = (deviceId: string, hours: number = 24
 // 扩展Mock数据以满足30个设备的要求
 export const generateMockDevices = (count: number = 30): Device[] => {
   const deviceTypes: Device['type'][] = ['camera', 'drone', 'robot', 'sensor'];
-  const statuses: Device['status'][] = ['online', 'offline', 'maintenance'];
+  const statuses: Device['status'][] = ['online', 'offline'];
   const devices: Device[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -636,17 +620,13 @@ export const generateMockDevices = (count: number = 30): Device[] => {
       name: `${type === 'camera' ? '摄像头' : type === 'drone' ? '无人机' : type === 'robot' ? '机器人' : '传感器'}-${String(i + 1).padStart(3, '0')}`,
       type,
       status,
-      location: {
-        lat: 39.9042 + (Math.random() - 0.5) * 0.1,
-        lng: 116.4074 + (Math.random() - 0.5) * 0.1,
-      },
       capabilities: type === 'camera'
         ? ['video_capture', 'motion_detection']
         : type === 'drone'
-        ? ['video_capture', 'thermal_imaging', 'gps_tracking']
-        : type === 'robot'
-        ? ['autonomous_navigation', 'obstacle_detection', 'data_collection']
-        : ['temperature_monitoring', 'humidity_monitoring', 'air_quality'],
+          ? ['video_capture', 'thermal_imaging', 'gps_tracking']
+          : type === 'robot'
+            ? ['autonomous_navigation', 'obstacle_detection', 'data_collection']
+            : ['temperature_monitoring', 'humidity_monitoring', 'air_quality'],
       lastUpdate: new Date(Date.now() - Math.random() * 86400000).toISOString(),
       model: `Model-${type.toUpperCase()}-${i + 1}`,
       serialNumber: `SN${String(i + 1).padStart(6, '0')}`,

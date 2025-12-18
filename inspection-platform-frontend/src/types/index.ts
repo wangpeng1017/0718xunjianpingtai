@@ -3,11 +3,7 @@ export interface Device {
   id: string;
   name: string;
   type: 'camera' | 'drone' | 'robot' | 'sensor';
-  status: 'online' | 'offline' | 'maintenance';
-  location: {
-    lat: number;
-    lng: number;
-  };
+  status: 'online' | 'offline';
   capabilities: string[];
   lastUpdate: string;
   model?: string;
@@ -105,11 +101,6 @@ export interface TaskStatus {
 export interface MonitoringData {
   deviceId: string;
   timestamp: string;
-  location: {
-    lat: number;
-    lng: number;
-    altitude?: number;
-  };
   telemetry: {
     batteryLevel?: number;
     signalStrength?: number;
@@ -150,10 +141,6 @@ export interface ReportFinding {
   type: 'normal' | 'warning' | 'critical';
   title: string;
   description: string;
-  location?: {
-    lat: number;
-    lng: number;
-  };
   evidence: string[];
   severity: 1 | 2 | 3 | 4 | 5;
 }
@@ -174,7 +161,6 @@ export interface Statistics {
     total: number;
     online: number;
     offline: number;
-    maintenance: number;
   };
   efficiency: {
     averageTaskDuration: number;
