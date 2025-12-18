@@ -32,7 +32,7 @@ interface DeviceCapability {
   id: string;
   name: string;
   type: 'data_collection' | 'video_processing' | 'control' | 'communication' | 'analysis' | 'navigation';
-  category: 'input' | 'output' | 'processing' | 'storage';
+  category: 'video' | 'image' | 'data';
   description: string;
   deviceId: string;
   deviceName: string;
@@ -72,7 +72,7 @@ const mockCapabilities: DeviceCapability[] = [
     id: 'cap-1',
     name: '高清视频采集',
     type: 'data_collection',
-    category: 'input',
+    category: 'video',
     description: '支持4K高清视频实时采集和传输',
     deviceId: 'device-1',
     deviceName: '巡检无人机-01',
@@ -121,7 +121,7 @@ const mockCapabilities: DeviceCapability[] = [
     id: 'cap-2',
     name: '红外热成像',
     type: 'data_collection',
-    category: 'input',
+    category: 'data',
     description: '红外热成像数据采集和温度分析',
     deviceId: 'device-1',
     deviceName: '巡检无人机-01',
@@ -164,7 +164,7 @@ const mockCapabilities: DeviceCapability[] = [
     id: 'cap-3',
     name: '智能路径规划',
     type: 'navigation',
-    category: 'processing',
+    category: 'data',
     description: '基于AI的智能路径规划和避障',
     deviceId: 'device-2',
     deviceName: '巡检机器人-02',
@@ -222,12 +222,13 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
   const [formData, setFormData] = useState({
     name: capability?.name || '',
     type: capability?.type || 'data_collection',
-    category: capability?.category || 'input',
+    category: capability?.category || 'video',
     description: capability?.description || '',
     deviceId: capability?.deviceId || '',
     status: capability?.status || 'inactive',
     dataTypes: capability?.dataTypes?.join(', ') || '',
-    dependencies: capability?.dependencies?.join(', ') || ''
+    dependencies: capability?.dependencies?.join(', ') || '',
+    parametersJson: capability?.parameters ? JSON.stringify(capability.parameters, null, 2) : '{}'
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -250,10 +251,9 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
   ];
 
   const categoryOptions = [
-    { value: 'input', label: '输入' },
-    { value: 'output', label: '输出' },
-    { value: 'processing', label: '处理' },
-    { value: 'storage', label: '存储' }
+    { value: 'video', label: '视频回传' },
+    { value: 'image', label: '图像回传' },
+    { value: 'data', label: '数据回传' }
   ];
 
   const statusOptions = [
@@ -273,6 +273,12 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
       newErrors.deviceId = '请选择关联设备';
     }
 
+    try {
+      JSON.parse(formData.parametersJson);
+    } catch (e) {
+      newErrors.parametersJson = 'JSON格式错误';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -285,12 +291,14 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
     }
 
     const selectedDevice = devices.find(d => d.value === formData.deviceId);
+    const { parametersJson, ...formDataBase } = formData;
+
     const capabilityData: Partial<DeviceCapability> = {
-      ...formData,
-      deviceName: selectedDevice?.label,
+      ...formDataBase,
+      deviceName: selectedDevice?.label || '',
       dataTypes: formData.dataTypes.split(',').map(t => t.trim()).filter(Boolean),
       dependencies: formData.dependencies.split(',').map(d => d.trim()).filter(Boolean),
-      parameters: capability?.parameters || {},
+      parameters: JSON.parse(formData.parametersJson),
       interfaces: capability?.interfaces || { input: [], output: [] },
       performance: capability?.performance || { latency: 0, throughput: 0, accuracy: 0 },
       testResults: capability?.testResults || { success: 0, failed: 0, lastResult: 'pending' },
@@ -366,7 +374,17 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
           value={formData.description}
           onChange={(value) => setFormData({ ...formData, description: value })}
           placeholder="请输入能力描述"
-          rows={3}
+          rows={2}
+        />
+      </FormField>
+
+      <FormField label="能力参数 (JSON)" error={errors.parametersJson}>
+        <TextArea
+          value={formData.parametersJson}
+          onChange={(value) => setFormData({ ...formData, parametersJson: value })}
+          placeholder="请按JSON格式输入能力参数"
+          rows={6}
+          className="font-mono text-xs"
         />
       </FormField>
 
@@ -634,6 +652,13 @@ function DeviceCapabilities() {
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
                         {getTypeLabel(capability.type)}
                       </span>
+                      <div className="mt-1">
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded-full text-[10px]">
+                          {capability.category === 'video' ? '视频回传' :
+                            capability.category === 'image' ? '图像回传' :
+                              capability.category === 'data' ? '数据回传' : capability.category}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={capability.status} />
