@@ -15,30 +15,38 @@ export const mockUser: User = {
 export const mockDevices: Device[] = [
   {
     id: 'device-1',
-    name: '无人机-001',
+    name: '巡检机器狗-01',
     type: 'drone',
     status: 'online',
-    capabilities: ['video_capture', 'thermal_imaging', 'gps_tracking'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.101', port: 554, protocol: 'RTSP', endpoint: '/live/main' },
+      { type: 'data', enabled: true, ip: '192.168.1.101', port: 1883, protocol: 'MQTT', endpoint: '/sys/status' }
+    ],
     lastUpdate: '2024-01-15T10:30:00Z',
-    model: 'DJI Mavic 3',
-    serialNumber: 'DJI001',
+    model: 'DogBot V1',
+    serialNumber: 'SN-DOG-001',
   },
   {
     id: 'device-2',
     name: '摄像头-002',
     type: 'camera',
     status: 'online',
-    capabilities: ['video_capture', 'motion_detection'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.102', port: 554, protocol: 'RTSP', endpoint: '/h264/ch1/main' }
+    ],
     lastUpdate: '2024-01-15T10:25:00Z',
     model: 'Hikvision DS-2CD2T47G1',
     serialNumber: 'HIK002',
   },
   {
     id: 'device-3',
-    name: '巡检机器人-003',
+    name: '巡检机器狗-003',
     type: 'robot',
     status: 'offline',
-    capabilities: ['autonomous_navigation', 'obstacle_detection', 'data_collection'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.103', port: 554, protocol: 'RTSP', endpoint: '/live' },
+      { type: 'data', enabled: true, ip: '192.168.1.103', port: 1883, protocol: 'MQTT', endpoint: '/status' }
+    ],
     lastUpdate: '2024-01-15T09:45:00Z',
     model: 'Boston Dynamics Spot',
     serialNumber: 'BD003',
@@ -48,7 +56,9 @@ export const mockDevices: Device[] = [
     name: '无人机-004',
     type: 'drone',
     status: 'offline',
-    capabilities: ['video_capture', 'lidar_scanning', 'gps_tracking'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.104', port: 554, protocol: 'RTSP', endpoint: '/live' }
+    ],
     lastUpdate: '2024-01-15T08:15:00Z',
     model: 'DJI Phantom 4 RTK',
     serialNumber: 'DJI004',
@@ -58,7 +68,9 @@ export const mockDevices: Device[] = [
     name: '传感器-005',
     type: 'sensor',
     status: 'online',
-    capabilities: ['temperature_monitoring', 'humidity_monitoring', 'air_quality'],
+    capabilities: [
+      { type: 'data', enabled: true, ip: '192.168.1.105', port: 1883, protocol: 'MQTT', endpoint: '/sensor/data' }
+    ],
     lastUpdate: '2024-01-15T10:35:00Z',
     model: 'Bosch BME680',
     serialNumber: 'BSH005',
@@ -68,17 +80,22 @@ export const mockDevices: Device[] = [
     name: '摄像头-006',
     type: 'camera',
     status: 'offline',
-    capabilities: ['video_capture', 'night_vision', 'motion_detection'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.106', port: 554, protocol: 'RTSP', endpoint: '/live' }
+    ],
     lastUpdate: '2024-01-15T07:20:00Z',
     model: 'Dahua IPC-HFW5831E',
     serialNumber: 'DH006',
   },
   {
     id: 'device-7',
-    name: '巡检机器人-007',
+    name: '巡检机器狗-007',
     type: 'robot',
     status: 'online',
-    capabilities: ['autonomous_navigation', 'thermal_imaging', 'gas_detection'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.107', port: 554, protocol: 'RTSP', endpoint: '/live' },
+      { type: 'data', enabled: true, ip: '192.168.1.107', port: 1883, protocol: 'MQTT', endpoint: '/data' }
+    ],
     lastUpdate: '2024-01-15T10:40:00Z',
     model: 'ANYbotics ANYmal',
     serialNumber: 'ANY007',
@@ -88,7 +105,9 @@ export const mockDevices: Device[] = [
     name: '无人机-008',
     type: 'drone',
     status: 'online',
-    capabilities: ['video_capture', 'multispectral_imaging', 'gps_tracking'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.108', port: 554, protocol: 'RTSP', endpoint: '/live' }
+    ],
     lastUpdate: '2024-01-15T10:28:00Z',
     model: 'DJI Matrice 300 RTK',
     serialNumber: 'DJI008',
@@ -98,7 +117,10 @@ export const mockDevices: Device[] = [
     name: '测温云台',
     type: 'camera',
     status: 'online',
-    capabilities: ['video_capture', 'thermal_imaging', 'ptz_control'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.109', port: 554, protocol: 'RTSP', endpoint: '/live' },
+      { type: 'image', enabled: true, ip: '192.168.1.109', port: 80, protocol: 'HTTP', endpoint: '/capture' }
+    ],
     lastUpdate: '2024-01-15T10:50:00Z',
     model: '测温云台 V1',
     serialNumber: 'PTZ-TEMP-001',
@@ -108,7 +130,9 @@ export const mockDevices: Device[] = [
     name: '可见光云台',
     type: 'camera',
     status: 'online',
-    capabilities: ['video_capture', 'ptz_control'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.110', port: 554, protocol: 'RTSP', endpoint: '/live' }
+    ],
     lastUpdate: '2024-01-15T10:52:00Z',
     model: '可见光云台 V1',
     serialNumber: 'PTZ-VIS-001',
@@ -118,7 +142,10 @@ export const mockDevices: Device[] = [
     name: '漏油检测云台',
     type: 'camera',
     status: 'online',
-    capabilities: ['video_capture', 'infrared_imaging', 'oil_leak_detection', 'ptz_control'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.111', port: 554, protocol: 'RTSP', endpoint: '/live' },
+      { type: 'data', enabled: true, ip: '192.168.1.111', port: 1883, protocol: 'MQTT', endpoint: '/leak' }
+    ],
     lastUpdate: '2024-01-15T10:54:00Z',
     model: '漏油检测云台 V1',
     serialNumber: 'PTZ-OIL-001',
@@ -128,7 +155,9 @@ export const mockDevices: Device[] = [
     name: '在线式声像仪',
     type: 'sensor',
     status: 'online',
-    capabilities: ['acoustic_imaging', 'temperature_monitoring'],
+    capabilities: [
+      { type: 'data', enabled: true, ip: '192.168.1.112', port: 1883, protocol: 'MQTT', endpoint: '/acoustic' }
+    ],
     lastUpdate: '2024-01-15T10:56:00Z',
     model: '在线声像仪 V1',
     serialNumber: 'ACOUSTIC-001',
@@ -138,7 +167,10 @@ export const mockDevices: Device[] = [
     name: '双镜头云台+声像仪一体云台',
     type: 'camera',
     status: 'online',
-    capabilities: ['video_capture', 'thermal_imaging', 'acoustic_imaging', 'ptz_control'],
+    capabilities: [
+      { type: 'video', enabled: true, ip: '192.168.1.113', port: 554, protocol: 'RTSP', endpoint: '/live' },
+      { type: 'image', enabled: true, ip: '192.168.1.113', port: 80, protocol: 'HTTP', endpoint: '/thermal' }
+    ],
     lastUpdate: '2024-01-15T10:58:00Z',
     model: '双镜头声像一体云台 V1',
     serialNumber: 'PTZ-DUAL-ACOUSTIC-001',
@@ -148,7 +180,9 @@ export const mockDevices: Device[] = [
     name: 'TDLAS检测云台',
     type: 'sensor',
     status: 'online',
-    capabilities: ['gas_detection', 'tdlas_detection', 'ptz_control'],
+    capabilities: [
+      { type: 'data', enabled: true, ip: '192.168.1.114', port: 1883, protocol: 'MQTT', endpoint: '/gas' }
+    ],
     lastUpdate: '2024-01-15T11:00:00Z',
     model: 'TDLAS 云台 V1',
     serialNumber: 'PTZ-TDLAS-001',
@@ -158,7 +192,9 @@ export const mockDevices: Device[] = [
     name: '边缘分析主机',
     type: 'sensor',
     status: 'online',
-    capabilities: ['edge_computing', 'ai_inference', 'data_aggregation'],
+    capabilities: [
+      { type: 'data', enabled: true, ip: '192.168.1.115', port: 1883, protocol: 'MQTT', endpoint: '/edge' }
+    ],
     lastUpdate: '2024-01-15T11:02:00Z',
     model: '边缘分析主机 V1',
     serialNumber: 'EDGE-HOST-001',
@@ -614,13 +650,10 @@ export const generateMockDevices = (count: number = 30): Device[] => {
       name: `${type === 'camera' ? '摄像头' : type === 'drone' ? '无人机' : type === 'robot' ? '机器人' : '传感器'}-${String(i + 1).padStart(3, '0')}`,
       type,
       status,
-      capabilities: type === 'camera'
-        ? ['video_capture', 'motion_detection']
-        : type === 'drone'
-          ? ['video_capture', 'thermal_imaging', 'gps_tracking']
-          : type === 'robot'
-            ? ['autonomous_navigation', 'obstacle_detection', 'data_collection']
-            : ['temperature_monitoring', 'humidity_monitoring', 'air_quality'],
+      capabilities: [
+        { type: 'video', enabled: type === 'camera' || type === 'drone', ip: `192.168.1.${100 + i}`, port: 554, protocol: 'RTSP', endpoint: '/live' },
+        { type: 'data', enabled: true, ip: `192.168.1.${100 + i}`, port: 1883, protocol: 'MQTT', endpoint: '/data' }
+      ],
       lastUpdate: new Date(Date.now() - Math.random() * 86400000).toISOString(),
       model: `Model-${type.toUpperCase()}-${i + 1}`,
       serialNumber: `SN${String(i + 1).padStart(6, '0')}`,

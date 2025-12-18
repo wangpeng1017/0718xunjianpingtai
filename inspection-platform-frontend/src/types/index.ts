@@ -1,10 +1,18 @@
-// 设备相关类型
+export interface DeviceCapabilityConfig {
+  type: 'video' | 'image' | 'data';
+  ip?: string;
+  port?: number;
+  protocol?: string;
+  endpoint?: string;
+  enabled: boolean;
+}
+
 export interface Device {
   id: string;
   name: string;
   type: 'camera' | 'drone' | 'robot' | 'sensor';
   status: 'online' | 'offline';
-  capabilities: string[];
+  capabilities: DeviceCapabilityConfig[];
   lastUpdate: string;
   model?: string;
   serialNumber?: string;

@@ -6,17 +6,12 @@ import {
   Trash2,
   Settings,
   Play,
-  Pause,
-  Upload,
-  Download,
   Eye,
   Cpu,
   Database,
-  Wifi,
-  Camera,
-  Mic,
   Navigation,
-  Thermometer
+  Camera,
+  Mic
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -41,7 +36,7 @@ interface DeviceCapability {
   parameters: {
     [key: string]: {
       type: 'string' | 'number' | 'boolean' | 'array' | 'object';
-      value: any;
+      value: unknown;
       required: boolean;
       description: string;
     };
@@ -124,7 +119,7 @@ const mockCapabilities: DeviceCapability[] = [
     category: 'data',
     description: '红外热成像数据采集和温度分析',
     deviceId: 'device-1',
-    deviceName: '巡检无人机-01',
+    deviceName: '巡检机器狗-01',
     status: 'active',
     dataTypes: ['thermal/raw', 'temperature/celsius'],
     parameters: {
@@ -275,7 +270,7 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
 
     try {
       JSON.parse(formData.parametersJson);
-    } catch (e) {
+    } catch {
       newErrors.parametersJson = 'JSON格式错误';
     }
 
@@ -291,7 +286,8 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
     }
 
     const selectedDevice = devices.find(d => d.value === formData.deviceId);
-    const { parametersJson, ...formDataBase } = formData;
+    const formDataBase = { ...formData } as any;
+    delete formDataBase.parametersJson;
 
     const capabilityData: Partial<DeviceCapability> = {
       ...formDataBase,

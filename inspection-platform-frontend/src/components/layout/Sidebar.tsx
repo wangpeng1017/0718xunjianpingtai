@@ -47,7 +47,6 @@ const navigationItems: NavigationItem[] = [
       { id: 'device-list', label: '设备列表', icon: Monitor, path: '/devices' },
       { id: 'device-templates', label: '设备模板', icon: FileText, path: '/device-templates' },
       { id: 'device-capabilities', label: '设备能力', icon: Zap, path: '/device-capabilities' },
-      { id: 'protocol-interface', label: '协议接口', icon: Network, path: '/devices/protocols' },
       { id: 'inspection-targets', label: '巡检目标设置', icon: Target, path: '/devices/targets' },
     ],
   },
@@ -236,8 +235,8 @@ export function Sidebar({ className }: SidebarProps) {
                 key={child.id}
                 to={child.path!}
                 className={`flex items-center px-3 py-1.5 ml-6 text-xs rounded-md transition-colors ${isActive(child.path!)
-                    ? 'bg-white text-emerald-700 shadow-sm'
-                    : 'text-emerald-50/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white text-emerald-700 shadow-sm'
+                  : 'text-emerald-50/80 hover:bg-white/10 hover:text-white'
                   }`}
               >
                 <child.icon className="h-4 w-4 mr-2" />

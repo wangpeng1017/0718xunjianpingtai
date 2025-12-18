@@ -2,15 +2,11 @@ import React from 'react';
 import {
   Plus,
   Search,
-  Filter,
   Edit,
   Trash2,
   Eye,
   Wifi,
   Settings,
-  MoreHorizontal,
-  Monitor,
-  Play,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -18,7 +14,7 @@ import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
-import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
+import { Form, FormField, Select } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { useDevices, useDeviceStore } from '../../stores/useDeviceStore';
 import { mockDevices } from '../../mocks/data';
@@ -35,10 +31,14 @@ interface DeviceFormProps {
 function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
   const [formData, setFormData] = React.useState({
     name: device?.name || '',
-    type: device?.type || '',
+    type: device?.type || 'camera',
     model: device?.model || '',
     serialNumber: device?.serialNumber || '',
-    capabilities: device?.capabilities?.join(', ') || '',
+    capabilities: device?.capabilities || [
+      { type: 'video', enabled: false, ip: '', port: 554, protocol: 'RTSP', endpoint: '' },
+      { type: 'image', enabled: false, ip: '', port: 80, protocol: 'HTTP', endpoint: '' },
+      { type: 'data', enabled: false, ip: '', port: 1883, protocol: 'MQTT', endpoint: '' },
+    ],
   });
 
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -50,10 +50,10 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
     { value: 'sensor', label: '传感器' },
   ];
 
-  const statusOptions = [
+  /* const statusOptions = [
     { value: 'online', label: '在线' },
     { value: 'offline', label: '离线' },
-  ];
+  ]; */
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -82,7 +82,7 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
     const deviceData: Partial<Device> = {
       ...formData,
       type: formData.type as Device['type'],
-      capabilities: formData.capabilities.split(',').map(c => c.trim()).filter(Boolean),
+      capabilities: formData.capabilities.filter(c => c.enabled),
       lastUpdate: new Date().toISOString(),
     };
 
@@ -94,6 +94,32 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
 
     onSubmit(deviceData);
   };
+
+  const handleCapabilityToggle = (type: 'video' | 'image' | 'data') => {
+    setFormData(prev => ({
+      ...prev,
+      capabilities: prev.capabilities.map(c =>
+        c.type === type ? { ...c, enabled: !c.enabled } : c
+      )
+    }));
+  };
+
+  const updateCapabilityField = (type: 'video' | 'image' | 'data', field: string, value: string | number | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      capabilities: prev.capabilities.map(c =>
+        c.type === type ? { ...c, [field]: value } : c
+      )
+    }));
+  };
+
+  const protocolOptions = [
+    { value: 'MQTT', label: 'MQTT' },
+    { value: 'HTTP', label: 'HTTP' },
+    { value: 'RTSP', label: 'RTSP' },
+    { value: 'WebSocket', label: 'WebSocket' },
+    { value: 'TCP', label: 'TCP' },
+  ];
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -134,14 +160,61 @@ function DeviceForm({ device, onSubmit, onCancel }: DeviceFormProps) {
 
       </div>
 
-      <FormField label="设备能力" className="col-span-2">
-        <TextArea
-          value={formData.capabilities}
-          onChange={(value) => setFormData({ ...formData, capabilities: value })}
-          placeholder="请输入设备能力，用逗号分隔"
-          rows={3}
-        />
-      </FormField>
+      <div className="mt-6 border-t pt-4">
+        <h3 className="text-sm font-medium text-gray-900 mb-4">设备能力配置</h3>
+        <div className="space-y-6">
+          {formData.capabilities.map((cap) => (
+            <div key={cap.type} className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id={`cap-${cap.type}`}
+                  checked={cap.enabled}
+                  onChange={() => handleCapabilityToggle(cap.type)}
+                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                />
+                <label htmlFor={`cap-${cap.type}`} className="ml-2 block text-sm font-medium text-gray-900">
+                  {cap.type === 'video' ? '视频回传' : cap.type === 'image' ? '图像回传' : '数据回传'}
+                </label>
+              </div>
+
+              {cap.enabled && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-6">
+                  <FormField label="IP地址">
+                    <Input
+                      value={cap.ip}
+                      onChange={(e) => updateCapabilityField(cap.type, 'ip', e.target.value)}
+                      placeholder="例如: 192.168.1.100"
+                    />
+                  </FormField>
+                  <FormField label="端口">
+                    <Input
+                      type="number"
+                      value={cap.port}
+                      onChange={(e) => updateCapabilityField(cap.type, 'port', parseInt(e.target.value) || 0)}
+                      placeholder="端口号"
+                    />
+                  </FormField>
+                  <FormField label="通信协议">
+                    <Select
+                      value={cap.protocol}
+                      onChange={(val) => updateCapabilityField(cap.type, 'protocol', val)}
+                      options={protocolOptions}
+                    />
+                  </FormField>
+                  <FormField label="接入端点 (Endpoint)">
+                    <Input
+                      value={cap.endpoint}
+                      onChange={(e) => updateCapabilityField(cap.type, 'endpoint', e.target.value)}
+                      placeholder="例如: /stream/live"
+                    />
+                  </FormField>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
       <ModalFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
@@ -198,10 +271,10 @@ function DeviceList() {
   };
 
   // 状态映射
-  const statusMap = {
+  /* const statusMap = {
     online: '在线',
     offline: '离线',
-  };
+  }; */
 
   // 事件处理函数
   const handleViewDevice = (device: Device) => {
