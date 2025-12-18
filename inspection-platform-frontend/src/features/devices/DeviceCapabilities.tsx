@@ -5,13 +5,12 @@ import {
   Edit,
   Trash2,
   Settings,
-  Play,
   Eye,
-  Cpu,
   Database,
-  Navigation,
   Camera,
-  Mic
+  Mic,
+  Navigation,
+  Cpu
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -20,7 +19,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
 import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { formatRelativeTime } from '../../lib/utils';
 
 // 设备能力类型定义
 interface DeviceCapability {
@@ -33,32 +31,12 @@ interface DeviceCapability {
   deviceName: string;
   status: 'active' | 'inactive' | 'testing' | 'error';
   dataTypes: string[];
-  parameters: {
-    [key: string]: {
-      type: 'string' | 'number' | 'boolean' | 'array' | 'object';
-      value: unknown;
-      required: boolean;
-      description: string;
-    };
-  };
   interfaces: {
     input: string[];
     output: string[];
   };
-  dependencies: string[];
-  performance: {
-    latency: number; // ms
-    throughput: number; // ops/sec
-    accuracy: number; // percentage
-  };
   createdAt: string;
   updatedAt: string;
-  lastTested: string;
-  testResults: {
-    success: number;
-    failed: number;
-    lastResult: 'success' | 'failed' | 'pending';
-  };
 }
 
 // Mock数据
@@ -73,44 +51,12 @@ const mockCapabilities: DeviceCapability[] = [
     deviceName: '巡检机器狗-01',
     status: 'active',
     dataTypes: ['video/mp4', 'image/jpeg'],
-    parameters: {
-      resolution: {
-        type: 'string',
-        value: '3840x2160',
-        required: true,
-        description: '视频分辨率'
-      },
-      frameRate: {
-        type: 'number',
-        value: 30,
-        required: true,
-        description: '帧率(fps)'
-      },
-      bitRate: {
-        type: 'number',
-        value: 8000,
-        required: false,
-        description: '码率(kbps)'
-      }
-    },
     interfaces: {
       input: ['camera_sensor'],
       output: ['video_stream', 'image_capture']
     },
-    dependencies: ['power_management', 'storage_management'],
-    performance: {
-      latency: 50,
-      throughput: 30,
-      accuracy: 98.5
-    },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-07-15T14:30:00Z',
-    lastTested: '2024-07-17T09:00:00Z',
-    testResults: {
-      success: 245,
-      failed: 5,
-      lastResult: 'success'
-    }
   },
   {
     id: 'cap-2',
@@ -122,38 +68,12 @@ const mockCapabilities: DeviceCapability[] = [
     deviceName: '巡检机器狗-01',
     status: 'active',
     dataTypes: ['thermal/raw', 'temperature/celsius'],
-    parameters: {
-      temperatureRange: {
-        type: 'string',
-        value: '-20°C to 150°C',
-        required: true,
-        description: '温度检测范围'
-      },
-      sensitivity: {
-        type: 'number',
-        value: 0.1,
-        required: true,
-        description: '温度敏感度(°C)'
-      }
-    },
     interfaces: {
       input: ['thermal_sensor'],
       output: ['thermal_image', 'temperature_data']
     },
-    dependencies: ['calibration_service'],
-    performance: {
-      latency: 100,
-      throughput: 10,
-      accuracy: 95.2
-    },
     createdAt: '2024-02-01T08:00:00Z',
     updatedAt: '2024-07-10T16:20:00Z',
-    lastTested: '2024-07-16T15:30:00Z',
-    testResults: {
-      success: 189,
-      failed: 11,
-      lastResult: 'success'
-    }
   },
   {
     id: 'cap-3',
@@ -165,44 +85,12 @@ const mockCapabilities: DeviceCapability[] = [
     deviceName: '巡检机器人-02',
     status: 'testing',
     dataTypes: ['path/waypoints', 'obstacle/detection'],
-    parameters: {
-      algorithm: {
-        type: 'string',
-        value: 'A*',
-        required: true,
-        description: '路径规划算法'
-      },
-      safetyDistance: {
-        type: 'number',
-        value: 1.5,
-        required: true,
-        description: '安全距离(米)'
-      },
-      maxSpeed: {
-        type: 'number',
-        value: 2.0,
-        required: false,
-        description: '最大速度(m/s)'
-      }
-    },
     interfaces: {
       input: ['gps_data', 'lidar_data', 'target_coordinates'],
       output: ['navigation_path', 'movement_commands']
     },
-    dependencies: ['positioning_service', 'obstacle_detection'],
-    performance: {
-      latency: 200,
-      throughput: 5,
-      accuracy: 92.8
-    },
     createdAt: '2024-03-10T12:00:00Z',
     updatedAt: '2024-07-14T11:45:00Z',
-    lastTested: '2024-07-17T08:15:00Z',
-    testResults: {
-      success: 156,
-      failed: 24,
-      lastResult: 'pending'
-    }
   }
 ];
 
@@ -222,8 +110,6 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
     deviceId: capability?.deviceId || '',
     status: capability?.status || 'inactive',
     dataTypes: capability?.dataTypes?.join(', ') || '',
-    dependencies: capability?.dependencies?.join(', ') || '',
-    parametersJson: capability?.parameters ? JSON.stringify(capability.parameters, null, 2) : '{}'
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -268,12 +154,6 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
       newErrors.deviceId = '请选择关联设备';
     }
 
-    try {
-      JSON.parse(formData.parametersJson);
-    } catch {
-      newErrors.parametersJson = 'JSON格式错误';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -286,18 +166,12 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
     }
 
     const selectedDevice = devices.find(d => d.value === formData.deviceId);
-    const formDataBase = { ...formData } as any;
-    delete formDataBase.parametersJson;
 
     const capabilityData: Partial<DeviceCapability> = {
-      ...formDataBase,
+      ...formData,
       deviceName: selectedDevice?.label || '',
       dataTypes: formData.dataTypes.split(',').map(t => t.trim()).filter(Boolean),
-      dependencies: formData.dependencies.split(',').map(d => d.trim()).filter(Boolean),
-      parameters: JSON.parse(formData.parametersJson),
       interfaces: capability?.interfaces || { input: [], output: [] },
-      performance: capability?.performance || { latency: 0, throughput: 0, accuracy: 0 },
-      testResults: capability?.testResults || { success: 0, failed: 0, lastResult: 'pending' },
       updatedAt: new Date().toISOString()
     };
 
@@ -306,7 +180,6 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
     } else {
       capabilityData.id = `cap-${Date.now()}`;
       capabilityData.createdAt = new Date().toISOString();
-      capabilityData.lastTested = new Date().toISOString();
     }
 
     onSubmit(capabilityData);
@@ -374,24 +247,6 @@ function CapabilityForm({ capability, onSubmit, onCancel }: CapabilityFormProps)
         />
       </FormField>
 
-      <FormField label="能力参数 (JSON)" error={errors.parametersJson}>
-        <TextArea
-          value={formData.parametersJson}
-          onChange={(value) => setFormData({ ...formData, parametersJson: value })}
-          placeholder="请按JSON格式输入能力参数"
-          rows={6}
-          className="font-mono text-xs"
-        />
-      </FormField>
-
-      <FormField label="依赖服务">
-        <Input
-          value={formData.dependencies}
-          onChange={(e) => setFormData({ ...formData, dependencies: e.target.value })}
-          placeholder="请输入依赖服务，用逗号分隔"
-        />
-      </FormField>
-
       <ModalFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
           取消
@@ -450,30 +305,8 @@ function DeviceCapabilities() {
     }
   };
 
-  const handleTestCapability = (capability: DeviceCapability) => {
-    // 模拟测试能力
-    setCapabilities(capabilities.map(c =>
-      c.id === capability.id
-        ? { ...c, status: 'testing', lastTested: new Date().toISOString() }
-        : c
-    ));
-
-    // 模拟测试完成
-    setTimeout(() => {
-      setCapabilities(prev => prev.map(c =>
-        c.id === capability.id
-          ? {
-            ...c,
-            status: 'active',
-            testResults: {
-              ...c.testResults,
-              success: c.testResults.success + 1,
-              lastResult: 'success'
-            }
-          }
-          : c
-      ));
-    }, 3000);
+  const handleTestCapability = (_capability: DeviceCapability) => {
+    // 功能已移除
   };
 
   const getTypeIcon = (type: string) => {
@@ -509,7 +342,7 @@ function DeviceCapabilities() {
       </div>
 
       {/* 统计卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -530,33 +363,7 @@ function DeviceCapabilities() {
                   {capabilities.filter(c => c.status === 'active').length}
                 </p>
               </div>
-              <Play className="h-8 w-8 text-green-400" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">测试中</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {capabilities.filter(c => c.status === 'testing').length}
-                </p>
-              </div>
-              <Settings className="h-8 w-8 text-yellow-400" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">平均准确率</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {Math.round(capabilities.reduce((sum, c) => sum + c.performance.accuracy, 0) / capabilities.length)}%
-                </p>
-              </div>
-              <Cpu className="h-8 w-8 text-purple-400" />
+              <Settings className="h-8 w-8 text-green-400" />
             </div>
           </CardContent>
         </Card>
@@ -621,9 +428,6 @@ function DeviceCapabilities() {
                 <TableHead>能力名称</TableHead>
                 <TableHead>类型</TableHead>
                 <TableHead>状态</TableHead>
-                <TableHead>性能指标</TableHead>
-                <TableHead>测试结果</TableHead>
-                <TableHead>最后测试</TableHead>
                 <TableHead>操作</TableHead>
               </TableRow>
             </TableHeader>
@@ -660,29 +464,7 @@ function DeviceCapabilities() {
                       <StatusBadge status={capability.status} />
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm">
-                        <div>延迟: {capability.performance.latency}ms</div>
-                        <div>准确率: {capability.performance.accuracy}%</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <div className="text-green-600">成功: {capability.testResults.success}</div>
-                        <div className="text-red-600">失败: {capability.testResults.failed}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{formatRelativeTime(capability.lastTested)}</TableCell>
-                    <TableCell>
                       <div className="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleTestCapability(capability)}
-                          disabled={capability.status === 'testing'}
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          <Play className="h-4 w-4" />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
