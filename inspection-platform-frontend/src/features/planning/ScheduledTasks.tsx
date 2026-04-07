@@ -129,6 +129,8 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     assignedTo: task?.assignedTo || '',
     scheduleType: task?.schedule.type || 'daily',
     scheduleTime: task?.schedule.time || '09:00',
+    startDate: task?.schedule.startDate ? new Date(task.schedule.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    endDate: task?.schedule.endDate ? new Date(task.schedule.endDate).toISOString().split('T')[0] : '',
     estimatedDuration: task?.estimatedDuration || 30,
     notes: task?.notes || '',
     mapPoints: task?.mapPoints || [] as Point[]
@@ -142,6 +144,10 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     if (!formData.deviceId) newErrors.deviceId = '请选择执行设备';
     if (formData.estimatedDuration <= 0) newErrors.estimatedDuration = '预计时长必须大于0';
     if (formData.mapPoints.length === 0) newErrors.mapPoints = '请至少选择一个巡检点';
+    if (!formData.startDate) newErrors.startDate = '开始日期不能为空';
+    if (formData.startDate && formData.endDate && new Date(formData.startDate) > new Date(formData.endDate)) {
+      newErrors.endDate = '结束日期不能早于开始日期';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -222,6 +228,22 @@ function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
             onChange={(e) => setFormData({ ...formData, scheduleTime: e.target.value })}
           />
         </FormField>
+
+        <FormField label="开始日期" required error={errors.startDate}>
+          <Input
+            type="date"
+            value={formData.startDate}
+            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+          />
+        </FormField>
+
+        <FormField label="结束日期" error={errors.endDate}>
+          <Input
+            type="date"
+            value={formData.endDate}
+            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+          />
+        </FormField>
       </div>
 
       <div className="mb-4">
@@ -283,7 +305,8 @@ function ScheduledTasks() {
       schedule: {
         type: formData.scheduleType as any,
         time: formData.scheduleTime,
-        startDate: new Date().toISOString()
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: formData.endDate ? new Date(formData.endDate).toISOString() : undefined
       },
       estimatedDuration: formData.estimatedDuration,
       targets: targets,
@@ -315,7 +338,9 @@ function ScheduledTasks() {
           schedule: {
             ...t.schedule,
             type: formData.scheduleType,
-            time: formData.scheduleTime
+            time: formData.scheduleTime,
+            startDate: new Date(formData.startDate).toISOString(),
+            endDate: formData.endDate ? new Date(formData.endDate).toISOString() : undefined
           },
           estimatedDuration: formData.estimatedDuration,
           mapPoints: formData.mapPoints,
@@ -353,7 +378,6 @@ function ScheduledTasks() {
       case 'scheduled': return 'text-blue-600';
       case 'paused': return 'text-yellow-600';
       case 'completed': return 'text-gray-600';
-      case 'failed': return 'text-red-600';
       default: return 'text-gray-600';
     }
   };
@@ -408,8 +432,7 @@ function ScheduledTasks() {
                 { value: 'active', label: '活跃' },
                 { value: 'scheduled', label: '已调度' },
                 { value: 'paused', label: '暂停' },
-                { value: 'completed', label: '已完成' },
-                { value: 'failed', label: '失败' }
+                { value: 'completed', label: '已完成' }
               ]}
             />
           </div>
@@ -462,6 +485,10 @@ function ScheduledTasks() {
                       </div>
                       <div className="text-gray-500">
                         预计 {task.estimatedDuration} 分钟
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {new Date(task.schedule.startDate).toLocaleDateString('zh-CN')}
+                        {task.schedule.endDate ? ` 至 ${new Date(task.schedule.endDate).toLocaleDateString('zh-CN')}` : ' 起'}
                       </div>
                     </div>
                   </TableCell>

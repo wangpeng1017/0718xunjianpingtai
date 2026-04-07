@@ -10,10 +10,20 @@ import {
   Clock,
   MapPin,
   User,
+  Zap,
+  Check,
+  ChevronDown
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
+import { Modal, ModalFooter, ConfirmModal } from '../../components/ui/Modal';
+import { Form, FormField, Select, TextArea } from '../../components/ui/Form';
+import { StatusBadge } from '../../components/ui/StatusBadge';
 import { formatRelativeTime } from '../../lib/utils';
 import { MapSelection, Point, InspectionItem } from './components/MapSelection';
 import { mockTargets } from '../../mocks/data';
-import { Check, ChevronDown } from 'lucide-react';
 
 // 即时任务类型定义
 interface InstantTask {
@@ -23,7 +33,7 @@ interface InstantTask {
   deviceId: string;
   deviceName: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'running' | 'completed' | 'cancelled';
   assignedTo: string;
   estimatedDuration: number; // 分钟
   actualDuration?: number; // 分钟
@@ -113,245 +123,251 @@ interface TaskFormProps {
 }
 
 function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
-  notes: task?.notes || '',
+  const [formData, setFormData] = useState({
+    name: task?.name || '',
+    description: task?.description || '',
+    deviceId: task?.deviceId || '',
+    priority: task?.priority || 'medium',
+    assignedTo: task?.assignedTo || '',
+    estimatedDuration: task?.estimatedDuration || 30,
+    notes: task?.notes || '',
     mapPoints: task?.mapPoints || [],
-      selectedTargetIds: (task?.targets || []).map(t => t.id)
-});
-
-const [isTargetDropdownOpen, setIsTargetDropdownOpen] = useState(false);
-
-const [errors, setErrors] = useState<Record<string, string>>({});
-
-// Mock设备数据
-const devices = [
-  { value: 'device-1', label: '巡检无人机-01' },
-  { value: 'device-2', label: '巡检机器人-02' },
-  { value: 'device-3', label: '高清摄像头-03' },
-  { value: 'device-4', label: '环境传感器-04' }
-];
-
-const priorityOptions = [
-  { value: 'low', label: '低' },
-  { value: 'medium', label: '中' },
-  { value: 'high', label: '高' },
-  { value: 'urgent', label: '紧急' }
-];
-
-const validateForm = () => {
-  const newErrors: Record<string, string> = {};
-
-  if (!formData.name.trim()) {
-    newErrors.name = '任务名称不能为空';
-  }
-  if (!formData.deviceId) {
-    newErrors.deviceId = '请选择执行设备';
-  }
-  if (!formData.assignedTo.trim()) {
-    newErrors.assignedTo = '请指定负责人';
-  }
-  if (formData.estimatedDuration <= 0) {
-    newErrors.estimatedDuration = '预计时长必须大于0';
-  }
-  if (formData.mapPoints.length === 0 && formData.selectedTargetIds.length === 0) {
-    newErrors.targets = '请至少选择一个巡检点或巡检目标';
-  }
-
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
-
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!validateForm()) {
-    return;
-  }
-
-  const selectedDevice = devices.find(d => d.value === formData.deviceId);
-
-  // Convert mapPoints to targets
-  const mapTargets = formData.mapPoints.map((point) => ({
-    id: point.id,
-    name: point.name,
-    location: {
-      lat: 39.9042 + (point.y / 100) * 0.01,
-      lng: 116.4074 + (point.x / 100) * 0.01
-    },
-    completed: false,
-    inspectionItems: point.inspectionItems
-  }));
-
-  // Get selected predefined targets
-  const predefinedTargets = mockTargets
-    .filter(t => formData.selectedTargetIds.includes(t.id))
-    .map(t => ({
-      id: t.id,
-      name: t.name,
-      location: { lat: t.coordinates[0][1], lng: t.coordinates[0][0] },
-      completed: false
-    }));
-
-  // Merge targets, avoiding duplicates by ID
-  const allTargets = [...mapTargets];
-  predefinedTargets.forEach(pt => {
-    if (!allTargets.find(t => t.id === pt.id)) {
-      allTargets.push(pt);
-    }
+    selectedTargetIds: (task?.targets || []).map(t => t.id)
   });
 
-  const taskData: Partial<InstantTask> = {
-    ...formData,
-    deviceName: selectedDevice?.label,
-    status: task?.status || 'pending',
-    progress: task?.progress || 0,
-    targets: allTargets,
-    createdAt: task?.createdAt || new Date().toISOString()
+  const [isTargetDropdownOpen, setIsTargetDropdownOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Mock设备数据
+  const devices = [
+    { value: 'device-1', label: '巡检无人机-01' },
+    { value: 'device-2', label: '巡检机器人-02' },
+    { value: 'device-3', label: '高清摄像头-03' },
+    { value: 'device-4', label: '环境传感器-04' }
+  ];
+
+  const priorityOptions = [
+    { value: 'low', label: '低' },
+    { value: 'medium', label: '中' },
+    { value: 'high', label: '高' },
+    { value: 'urgent', label: '紧急' }
+  ];
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = '任务名称不能为空';
+    }
+    if (!formData.deviceId) {
+      newErrors.deviceId = '请选择执行设备';
+    }
+    if (!formData.assignedTo.trim()) {
+      newErrors.assignedTo = '请指定负责人';
+    }
+    if (formData.estimatedDuration <= 0) {
+      newErrors.estimatedDuration = '预计时长必须大于0';
+    }
+    if (formData.mapPoints.length === 0 && formData.selectedTargetIds.length === 0) {
+      newErrors.targets = '请至少选择一个巡检点或巡检目标';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  if (task) {
-    taskData.id = task.id;
-  } else {
-    taskData.id = `instant-${Date.now()}`;
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-  onSubmit(taskData);
-};
+    if (!validateForm()) {
+      return;
+    }
 
-return (
-  <Form onSubmit={handleSubmit}>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <FormField label="任务名称" required error={errors.name}>
-        <Input
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="请输入任务名称"
-        />
-      </FormField>
+    const selectedDevice = devices.find(d => d.value === formData.deviceId);
 
-      <FormField label="执行设备" required error={errors.deviceId}>
-        <Select
-          value={formData.deviceId}
-          onChange={(value) => setFormData({ ...formData, deviceId: value })}
-          options={devices}
-          placeholder="请选择执行设备"
-        />
-      </FormField>
+    // Convert mapPoints to targets
+    const mapTargets = formData.mapPoints.map((point) => ({
+      id: point.id,
+      name: point.name,
+      location: {
+        lat: 39.9042 + (point.y / 100) * 0.01,
+        lng: 116.4074 + (point.x / 100) * 0.01
+      },
+      completed: false,
+      inspectionItems: point.inspectionItems
+    }));
 
-      <FormField label="优先级" error={errors.priority}>
-        <Select
-          value={formData.priority}
-          onChange={(value) => setFormData({ ...formData, priority: value as InstantTask['priority'] })}
-          options={priorityOptions}
-        />
-      </FormField>
+    // Get selected predefined targets
+    const predefinedTargets = mockTargets
+      .filter(t => formData.selectedTargetIds.includes(t.id))
+      .map(t => ({
+        id: t.id,
+        name: t.name,
+        location: { lat: t.coordinates[0][1], lng: t.coordinates[0][0] },
+        completed: false
+      }));
 
-      <FormField label="负责人" required error={errors.assignedTo}>
-        <Input
-          value={formData.assignedTo}
-          onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-          placeholder="请输入负责人"
-        />
-      </FormField>
+    // Merge targets, avoiding duplicates by ID
+    const allTargets = [...mapTargets];
+    predefinedTargets.forEach(pt => {
+      if (!allTargets.find(t => t.id === pt.id)) {
+        allTargets.push(pt);
+      }
+    });
 
-      <FormField label="预计时长(分钟)" required error={errors.estimatedDuration}>
-        <Input
-          type="number"
-          value={formData.estimatedDuration}
-          onChange={(e) => setFormData({ ...formData, estimatedDuration: parseInt(e.target.value) || 0 })}
-          placeholder="请输入预计时长"
-        />
-      </FormField>
+    const taskData: Partial<InstantTask> = {
+      ...formData,
+      deviceName: selectedDevice?.label || '未知设备',
+      status: task?.status || 'pending',
+      progress: task?.progress || 0,
+      targets: allTargets,
+      createdAt: task?.createdAt || new Date().toISOString()
+    };
 
-      <FormField label="巡检目标" error={errors.targets}>
-        <div className="relative">
-          <div
-            className="flex items-center justify-between w-full px-3 py-2 border border-gray-300 rounded-lg cursor-pointer bg-white"
-            onClick={() => setIsTargetDropdownOpen(!isTargetDropdownOpen)}
-          >
-            <div className="flex flex-wrap gap-1 overflow-hidden">
-              {formData.selectedTargetIds.length > 0 ? (
-                formData.selectedTargetIds.map(id => {
-                  const target = mockTargets.find(t => t.id === id);
-                  return (
-                    <span key={id} className="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full whitespace-nowrap">
-                      {target?.name}
-                    </span>
-                  );
-                })
-              ) : (
-                <span className="text-gray-400">请选择巡检目标</span>
-              )}
-            </div>
-            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isTargetDropdownOpen ? 'transform rotate-180' : ''}`} />
-          </div>
+    if (task) {
+      taskData.id = task.id;
+    } else {
+      taskData.id = `instant-${Date.now()}`;
+    }
 
-          {isTargetDropdownOpen && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setIsTargetDropdownOpen(false)} />
-              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                {mockTargets.map(target => (
-                  <div
-                    key={target.id}
-                    className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                    onClick={() => {
-                      const newIds = formData.selectedTargetIds.includes(target.id)
-                        ? formData.selectedTargetIds.filter(id => id !== target.id)
-                        : [...formData.selectedTargetIds, target.id];
-                      setFormData({ ...formData, selectedTargetIds: newIds });
-                    }}
-                  >
-                    <div className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${formData.selectedTargetIds.includes(target.id) ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300'}`}>
-                      {formData.selectedTargetIds.includes(target.id) && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    <span className="text-sm text-gray-700">{target.name}</span>
-                  </div>
-                ))}
+    onSubmit(taskData);
+  };
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField label="任务名称" required error={errors.name}>
+          <Input
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="请输入任务名称"
+          />
+        </FormField>
+
+        <FormField label="执行设备" required error={errors.deviceId}>
+          <Select
+            value={formData.deviceId}
+            onChange={(value) => setFormData({ ...formData, deviceId: value })}
+            options={devices}
+            placeholder="请选择执行设备"
+          />
+        </FormField>
+
+        <FormField label="优先级" error={errors.priority}>
+          <Select
+            value={formData.priority}
+            onChange={(value) => setFormData({ ...formData, priority: value as InstantTask['priority'] })}
+            options={priorityOptions}
+          />
+        </FormField>
+
+        <FormField label="负责人" required error={errors.assignedTo}>
+          <Input
+            value={formData.assignedTo}
+            onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+            placeholder="请输入负责人"
+          />
+        </FormField>
+
+        <FormField label="预计时长(分钟)" required error={errors.estimatedDuration}>
+          <Input
+            type="number"
+            value={formData.estimatedDuration}
+            onChange={(e) => setFormData({ ...formData, estimatedDuration: parseInt(e.target.value) || 0 })}
+            placeholder="请输入预计时长"
+          />
+        </FormField>
+
+        <FormField label="巡检目标" error={errors.targets}>
+          <div className="relative">
+            <div
+              className="flex items-center justify-between w-full px-3 py-2 border border-gray-300 rounded-lg cursor-pointer bg-white"
+              onClick={() => setIsTargetDropdownOpen(!isTargetDropdownOpen)}
+            >
+              <div className="flex flex-wrap gap-1 overflow-hidden">
+                {formData.selectedTargetIds.length > 0 ? (
+                  formData.selectedTargetIds.map(id => {
+                    const target = mockTargets.find(t => t.id === id);
+                    return (
+                      <span key={id} className="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {target?.name}
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="text-gray-400">请选择巡检目标</span>
+                )}
               </div>
-            </>
-          )}
-        </div>
+              <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isTargetDropdownOpen ? 'transform rotate-180' : ''}`} />
+            </div>
+
+            {isTargetDropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setIsTargetDropdownOpen(false)} />
+                <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {mockTargets.map(target => (
+                    <div
+                      key={target.id}
+                      className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                      onClick={() => {
+                        const newIds = formData.selectedTargetIds.includes(target.id)
+                          ? formData.selectedTargetIds.filter(id => id !== target.id)
+                          : [...formData.selectedTargetIds, target.id];
+                        setFormData({ ...formData, selectedTargetIds: newIds });
+                      }}
+                    >
+                      <div className={`w-4 h-4 mr-2 border rounded flex items-center justify-center ${formData.selectedTargetIds.includes(target.id) ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300'}`}>
+                        {formData.selectedTargetIds.includes(target.id) && <Check className="h-3 w-3 text-white" />}
+                      </div>
+                      <span className="text-sm text-gray-700">{target.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </FormField>
+      </div>
+
+      <div className="mb-4">
+        <div className="text-sm font-medium text-gray-700 mb-1">通过地图选择巡检点</div>
+        <MapSelection
+          value={formData.mapPoints}
+          onChange={(points) => setFormData({ ...formData, mapPoints: points })}
+        />
+        {errors.targets && !formData.selectedTargetIds.length && (
+          <p className="text-sm text-red-500 mt-1">{errors.targets}</p>
+        )}
+      </div>
+
+      <FormField label="任务描述">
+        <TextArea
+          value={formData.description}
+          onChange={(value) => setFormData({ ...formData, description: value })}
+          placeholder="请输入任务描述"
+          rows={3}
+        />
       </FormField>
-    </div>
 
-    <div className="mb-4">
-      <div className="text-sm font-medium text-gray-700 mb-1">通过地图选择巡检点</div>
-      <MapSelection
-        value={formData.mapPoints}
-        onChange={(points) => setFormData({ ...formData, mapPoints: points })}
-      />
-      {errors.targets && !formData.selectedTargetIds.length && (
-        <p className="text-sm text-red-500 mt-1">{errors.targets}</p>
-      )}
-    </div>
+      <FormField label="备注">
+        <TextArea
+          value={formData.notes}
+          onChange={(value) => setFormData({ ...formData, notes: value })}
+          placeholder="请输入备注信息"
+          rows={2}
+        />
+      </FormField>
 
-    <FormField label="任务描述">
-      <TextArea
-        value={formData.description}
-        onChange={(value) => setFormData({ ...formData, description: value })}
-        placeholder="请输入任务描述"
-        rows={3}
-      />
-    </FormField>
-
-    <FormField label="备注">
-      <TextArea
-        value={formData.notes}
-        onChange={(value) => setFormData({ ...formData, notes: value })}
-        placeholder="请输入备注信息"
-        rows={2}
-      />
-    </FormField>
-
-    <ModalFooter>
-      <Button type="button" variant="outline" onClick={onCancel}>
-        取消
-      </Button>
-      <Button type="submit">
-        {task ? '更新' : '创建'}
-      </Button>
-    </ModalFooter>
-  </Form>
-);
+      <ModalFooter>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          取消
+        </Button>
+        <Button type="submit">
+          {task ? '更新' : '创建'}
+        </Button>
+      </ModalFooter>
+    </Form>
+  );
 }
 
 function InstantTasks() {
@@ -546,7 +562,6 @@ function InstantTasks() {
                 { value: 'pending', label: '待执行' },
                 { value: 'running', label: '进行中' },
                 { value: 'completed', label: '已完成' },
-                { value: 'failed', label: '失败' },
                 { value: 'cancelled', label: '已取消' }
               ]}
             />
@@ -610,10 +625,7 @@ function InstantTasks() {
                     <div className="flex items-center space-x-2">
                       <div className="w-16 bg-gray-200 rounded-full h-2">
                         <div
-                          className={`h-2 rounded-full ${task.status === 'completed' ? 'bg-green-500' :
-                            task.status === 'failed' ? 'bg-red-500' :
-                              'bg-blue-500'
-                            }`}
+                          className={`h-2 rounded-full ${task.status === 'completed' ? 'bg-green-500' : 'bg-blue-500'}`}
                           style={{ width: `${task.progress}%` }}
                         />
                       </div>

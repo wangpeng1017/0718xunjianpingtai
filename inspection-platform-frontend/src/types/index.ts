@@ -43,7 +43,7 @@ export interface Capability {
 export interface InspectionTask {
   id: string;
   name: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'running' | 'completed' | 'cancelled';
   deviceId: string;
   deviceName?: string;
   route: Array<{
@@ -160,7 +160,6 @@ export interface Statistics {
   tasks: {
     total: number;
     completed: number;
-    failed: number;
     pending: number;
   };
   devices: {

@@ -186,11 +186,11 @@ function TaskList() {
   const filteredTasks = React.useMemo(() => {
     return tasks.filter(task => {
       const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           task.deviceName?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        task.deviceName?.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
       const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
-      
+
       return matchesSearch && matchesStatus && matchesPriority;
     });
   }, [tasks, searchTerm, statusFilter, priorityFilter]);
@@ -202,7 +202,6 @@ function TaskList() {
       pending: tasks.filter(t => t.status === 'pending').length,
       running: tasks.filter(t => t.status === 'running').length,
       completed: tasks.filter(t => t.status === 'completed').length,
-      failed: tasks.filter(t => t.status === 'failed').length,
       cancelled: tasks.filter(t => t.status === 'cancelled').length,
     };
   }, [tasks]);
@@ -212,7 +211,6 @@ function TaskList() {
     pending: '待执行',
     running: '进行中',
     completed: '已完成',
-    failed: '失败',
     cancelled: '已取消',
   };
 
@@ -287,7 +285,7 @@ function TaskList() {
       </div>
 
       {/* 统计卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
@@ -323,14 +321,6 @@ function TaskList() {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-xs text-gray-500">失败</p>
-              <p className="mt-1 text-2xl font-bold text-red-600">{statusStats.failed}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
               <p className="text-xs text-gray-500">已取消</p>
               <p className="mt-1 text-2xl font-bold text-gray-600">{statusStats.cancelled}</p>
             </div>
@@ -360,7 +350,6 @@ function TaskList() {
               <option value="pending">待执行</option>
               <option value="running">进行中</option>
               <option value="completed">已完成</option>
-              <option value="failed">失败</option>
               <option value="cancelled">已取消</option>
             </select>
             <select
@@ -392,7 +381,6 @@ function TaskList() {
                 <TableHead>状态</TableHead>
                 <TableHead>优先级</TableHead>
                 <TableHead>进度</TableHead>
-                <TableHead>功能状态</TableHead>
                 <TableHead>负责人</TableHead>
                 <TableHead>创建时间</TableHead>
                 <TableHead>操作</TableHead>
@@ -428,32 +416,6 @@ function TaskList() {
                         />
                       </div>
                       <span className="text-sm text-gray-600">{task.progress}%</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {/* 视频流状态 */}
-                      {task.features?.videoStream?.enabled && (
-                        <div className="flex items-center gap-1" title={`视频流: ${task.features.videoStream.status === 'active' ? '活跃' : task.features.videoStream.status === 'inactive' ? '未激活' : '错误'}`}>
-                          <Video className={`h-4 w-4 ${task.features.videoStream.status === 'active' ? 'text-green-600' : task.features.videoStream.status === 'inactive' ? 'text-gray-400' : 'text-red-600'}`} />
-                        </div>
-                      )}
-                      {/* AI报警状态 */}
-                      {task.features?.aiAlert?.enabled && (
-                        <div className="flex items-center gap-1" title={`AI报警: ${task.features.aiAlert.alertCount || 0}次`}>
-                          <Bell className={`h-4 w-4 ${(task.features.aiAlert.alertCount || 0) > 0 ? 'text-red-600' : 'text-gray-400'}`} />
-                          {(task.features.aiAlert.alertCount || 0) > 0 && (
-                            <span className="text-xs text-red-600 font-medium">{task.features.aiAlert.alertCount}</span>
-                          )}
-                        </div>
-                      )}
-                      {/* 云台控制状态 */}
-                      {task.features?.ptzControl?.enabled && (
-                        <div className="flex items-center gap-1" title={`云台控制: 预置位${task.features.ptzControl.currentPreset || 1}, 变焦${task.features.ptzControl.zoomLevel || 0}%`}>
-                          <Camera className="h-4 w-4 text-blue-600" />
-                        </div>
-                      )}
-                      {!task.features && <span className="text-xs text-gray-400">-</span>}
                     </div>
                   </TableCell>
                   <TableCell>

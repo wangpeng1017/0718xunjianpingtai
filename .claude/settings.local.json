@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "mcp__serena__check_onboarding_performed",
+      "Bash(npm run dev)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: 新增任务管理功能 - 5个点位任务（A/B/C/D/E）及视频流、AI报警、云台控制\n\n- 更新任务类型定义，添加features字段支持视频流、AI报警、云台控制配置\n- 创建5个点位巡检任务（A点-测温云台、B点-可见光云台、C点-漏油检测云台、D点-双镜头云台、E点-TDLAS检测云台）\n- 每个任务包含完整的开始/结束时间和三大核心功能\n- 任务列表UI新增\"功能状态\"列，实时显示视频流、AI报警、云台控制状态\n- 视频流状态：绿色=活跃、灰色=未激活、红色=错误\n- AI报警状态：显示报警次数和类型（温度异常、设备故障、人员入侵等）\n- 云台控制状态：显示预置位和变焦级别信息\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(npm run build)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: 修复任务列表数据源，使用mockTasks替代generateMockTasks\n\n- 将任务初始化从generateMockTasks(100)改为mockTasks\n- 确保显示5个配置好的点位任务（A/B/C/D/E）\n- 修复功能状态列无法显示的问题\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: 执行跟踪页面新增实时视频流、AI报警和云台控制功能\n\n- 新增实时视频流显示模块，支持查看任务执行过程中的实时画面\n- 新增AI智能报警模块，实时显示报警信息并支持确认处理\n- 新增云台控制面板，支持方向控制、变焦调节和预置位切换\n- 视频流显示分辨率和帧率信息\n- AI报警按类型分级显示（warning/error/critical）\n- 云台控制包含上下左右、中心复位、变焦和6个预置位\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(dir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

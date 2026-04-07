@@ -65,7 +65,7 @@ const navigationItems: NavigationItem[] = [
     icon: List,
     children: [
       { id: 'task-overview', label: '任务概览', icon: List, path: '/tasks' },
-      { id: 'status-management', label: '状态管理', icon: Settings, path: '/tasks/status' },
+
       { id: 'execution-tracking', label: '执行跟踪', icon: Activity, path: '/tasks/tracking' },
     ],
   },

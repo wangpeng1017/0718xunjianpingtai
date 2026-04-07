@@ -578,7 +578,6 @@ export const mockStatistics: Statistics = {
   tasks: {
     total: 156,
     completed: 142,
-    failed: 8,
     pending: 6,
   },
   devices: {
@@ -606,7 +605,6 @@ export const generateTimeSeriesData = (days: number = 30) => {
       date: date.toISOString().split('T')[0],
       tasks: Math.floor(Math.random() * 20) + 5,
       success: Math.floor(Math.random() * 18) + 4,
-      failed: Math.floor(Math.random() * 3),
       efficiency: Math.floor(Math.random() * 20) + 80,
     });
   }
@@ -665,7 +663,7 @@ export const generateMockDevices = (count: number = 30): Device[] => {
 
 // 生成更多Mock任务数据
 export const generateMockTasks = (count: number = 100): InspectionTask[] => {
-  const statuses: InspectionTask['status'][] = ['pending', 'running', 'completed', 'failed', 'cancelled'];
+  const statuses: InspectionTask['status'][] = ['pending', 'running', 'completed', 'cancelled'];
   const priorities: InspectionTask['priority'][] = ['low', 'medium', 'high', 'urgent'];
   const tasks: InspectionTask[] = [];
 
